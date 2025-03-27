@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>NUMA Node Creation &#8212; cxl-boot-to-bash  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contiguous Memory Allocation" href="cma.html" />
+    <link rel="prev" title="SystemRAM vs Specific Purpose Memory" href="sysram-spmem.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="numa-node-creation">
+<h1>NUMA Node Creation<a class="headerlink" href="#numa-node-creation" title="Link to this heading">¶</a></h1>
+<p>NUMA nodes are <em>NOT</em> hot-pluggable.  All <em>POSSIBLE</em> NUMA nodes are identified at <cite>__init</cite> time, more specifically during <cite>mm_init</cite>.  What this means is that the CEDT and SRAT must contain sufficient <cite>proximity domain</cite> information for linux to identify how many NUMA nodes are required (and what memory regions should be associated with them).</p>
+<p>SRAT is the only ACPI defined way of getting Proximity nodes. Linux chooses to at most map those 1:1 with NUMA nodes.</p>
+<p>CEDT adds a description of SPA ranges which Linux may wish to map to one or more NUMA nodes</p>
+<p>The relevant code exists in: linux/drivers/acpi/numa/srat.c</p>
+<p>Basically, the heuristic is as follows</p>
+<ol class="arabic simple">
+<li><p>Add one NUMA node per Proximity Domain described in SRAT (one or more of: memory, cpu, generic initiator).</p></li>
+<li><p>If SRAT describes some portion of a CFMWS SPA range - do not create a nodes for that CFMWS</p></li>
+<li><p>If SRAT does not describe memory in a CFMWS SPA range - a node is created for that CFMWS</p></li>
+</ol>
+<p>In the future, Linux may reject CFMWS not described by SRAT due to the ambiguity of proximity domain association.</p>
+<p>Generally speaking, you will see one NUMA node per Host bridge, unless inter-host-bridge interleave is in use.  In environments with complex QoS concerns, or designed for runtime configuration flexibility, it may be reasonable to create more than one NUMA node per Host bridge.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">cxl-boot-to-bash</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Platform Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">CXL Driver Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../memory-hotplug/index.html">Onlining CXL Memory as System RAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../page-allocation/index.html">Allocation of CXL Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dynamic-capacity/index.html">Dynamic Capacity Devices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Platform Configuration</a><ul>
+  <li><a href="index.html">Linux Init (Early Boot)</a><ul>
+      <li>Previous: <a href="sysram-spmem.html" title="previous chapter">SystemRAM vs Specific Purpose Memory</a></li>
+      <li>Next: <a href="cma.html" title="next chapter">Contiguous Memory Allocation</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Gregory Price.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/platform/linux/numa-node.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

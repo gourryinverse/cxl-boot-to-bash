@@ -1,0 +1,6 @@
+.. platform documentation
+
+NUMA relation to ACPI Tables
+=====================================
+
+todo

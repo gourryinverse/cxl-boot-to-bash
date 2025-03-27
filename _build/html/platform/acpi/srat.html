@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SRAT - Static Resource Affinity Table &#8212; cxl-boot-to-bash  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="HMAT - Heterogeneous Memory Attribute Table" href="hmat.html" />
+    <link rel="prev" title="CEDT - CXL Early Discovery Table" href="cedt.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="srat-static-resource-affinity-table">
+<h1>SRAT - Static Resource Affinity Table<a class="headerlink" href="#srat-static-resource-affinity-table" title="Link to this heading">¶</a></h1>
+<p>The System/Static Resource Affinity Table describes resource (CPU, Memory) affinity to “Proximity Domains”. This table is technically optional, but for performance information (see “HMAT”) to be enumerated by linux it must be present.</p>
+<p>There is a careful dance between the CEDT and SRAT tables and how NUMA nodes are created.  If things don’t look quite the way you expect - check the SRAT Memory Affinity entries and CEDT CFMWS to determine what your platform actually supports in terms of flexible topologies.</p>
+<p>The SRAT may statically assign portions of a CFMWS SPA range to a specific proximity domains.  See linux numa creation for more information about how this presents in the NUMA topology.</p>
+<section id="proximity-domain">
+<h2>Proximity Domain<a class="headerlink" href="#proximity-domain" title="Link to this heading">¶</a></h2>
+<p>A proximity domain is ROUGHLY equivalent to “NUMA Node” - though a 1-to-1 mapping is not guaranteed.  There are scenarios where “Proximity Domain 4” may map to “NUMA Node 3”, for example.  (See “NUMA Node Creation”)</p>
+</section>
+<section id="memory-affinity">
+<h2>Memory Affinity<a class="headerlink" href="#memory-affinity" title="Link to this heading">¶</a></h2>
+<p>Generally speaking, if a host does any amount of CXL fabric (decoder) programming in BIOS - an SRAT entry for that memory needs to be present.</p>
+<p>Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="n">Subtable</span> <span class="n">Type</span> <span class="p">:</span> <span class="mi">01</span> <span class="p">[</span><span class="n">Memory</span> <span class="n">Affinity</span><span class="p">]</span>
+               <span class="n">Length</span> <span class="p">:</span> <span class="mi">28</span>
+     <span class="n">Proximity</span> <span class="n">Domain</span> <span class="p">:</span> <span class="mi">00000001</span>          <span class="o">&lt;-</span> <span class="n">NUMA</span> <span class="n">Node</span> <span class="mi">1</span>
+            <span class="n">Reserved1</span> <span class="p">:</span> <span class="mi">0000</span>
+         <span class="n">Base</span> <span class="n">Address</span> <span class="p">:</span> <span class="mi">000000</span><span class="n">C050000000</span>  <span class="o">&lt;-</span> <span class="n">Physical</span> <span class="n">Memory</span> <span class="n">Region</span>
+       <span class="n">Address</span> <span class="n">Length</span> <span class="p">:</span> <span class="mi">0000003</span><span class="n">CA0000000</span>
+            <span class="n">Reserved2</span> <span class="p">:</span> <span class="mi">00000000</span>
+<span class="n">Flags</span> <span class="p">(</span><span class="n">decoded</span> <span class="n">below</span><span class="p">)</span> <span class="p">:</span> <span class="mi">0000000</span><span class="n">B</span>
+             <span class="n">Enabled</span> <span class="p">:</span> <span class="mi">1</span>
+       <span class="n">Hot</span> <span class="n">Pluggable</span> <span class="p">:</span> <span class="mi">1</span>
+        <span class="n">Non</span><span class="o">-</span><span class="n">Volatile</span> <span class="p">:</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</section>
+<section id="generic-initiator-port">
+<h2>Generic Initiator / Port<a class="headerlink" href="#generic-initiator-port" title="Link to this heading">¶</a></h2>
+<p>todo</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">cxl-boot-to-bash</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Platform Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">CXL Driver Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../memory-hotplug/index.html">Onlining CXL Memory as System RAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../page-allocation/index.html">Allocation of CXL Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dynamic-capacity/index.html">Dynamic Capacity Devices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Platform Configuration</a><ul>
+  <li><a href="index.html">ACPI Table Reference</a><ul>
+      <li>Previous: <a href="cedt.html" title="previous chapter">CEDT - CXL Early Discovery Table</a></li>
+      <li>Next: <a href="hmat.html" title="next chapter">HMAT - Heterogeneous Memory Attribute Table</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Gregory Price.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/platform/acpi/srat.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
