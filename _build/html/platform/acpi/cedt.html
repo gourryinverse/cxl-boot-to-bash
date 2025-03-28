@@ -71,6 +71,14 @@
              <span class="n">Next</span> <span class="n">Target</span> <span class="p">:</span> <span class="mi">00000006</span>           <span class="o">&lt;-</span> <span class="n">Host</span> <span class="n">Bridge</span> <span class="n">_UID</span>
 </pre></div>
 </div>
+<p>The restriction field dictates what this SPA range may be used for (memory type, voltile vs persistent, etc). One or more bits may be set.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Bit</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">CXL</span> <span class="n">Type</span> <span class="mi">2</span> <span class="n">Memory</span>
+<span class="n">Bit</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">CXL</span> <span class="n">Type</span> <span class="mi">3</span> <span class="n">Memory</span>
+<span class="n">Bit</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">Volatile</span> <span class="n">Memory</span>
+<span class="n">Bit</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">Persistent</span> <span class="n">Memory</span>
+<span class="n">Bit</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">Fixed</span> <span class="n">Config</span> <span class="p">(</span><span class="n">HPA</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">re</span><span class="o">-</span><span class="n">used</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>INTRA-host-bridge interleave (multiple devices on one host bridge) is NOT reported in this structure, and is solely defined via CXL device decoder programming (host bridge and endpoint decoders).</p>
 </section>
 </section>
