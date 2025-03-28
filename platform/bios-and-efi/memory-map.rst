@@ -1,10 +1,9 @@
-.. bios and efi documentation
+.. physical memory map documentation
 
-Memory Map Suggestions
-======================
+Physical Memory Map
+===================
 
-todo - alignment
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+todo:
+base alignment
+region size
+memory holes
