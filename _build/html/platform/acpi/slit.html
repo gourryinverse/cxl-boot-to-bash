@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SLIT - System Locality Information Table &#8212; cxl-boot-to-bash  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Device Information" href="../device/index.html" />
+    <link rel="prev" title="HMAT - Heterogeneous Memory Attribute Table" href="hmat.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="slit-system-locality-information-table">
+<h1>SLIT - System Locality Information Table<a class="headerlink" href="#slit-system-locality-information-table" title="Link to this heading">¶</a></h1>
+<p>The system locality information table provides “abstract distances” between accessor and memory nodes.  Node without initiators (cpus) are infinitely (FF) distance away from all other nodes.</p>
+<p>The abstract distance described in this table does not describe any real latency of bandwidth information.</p>
+<p>Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">Signature</span> <span class="p">:</span> <span class="s2">&quot;SLIT&quot;</span>    <span class="p">[</span><span class="n">System</span> <span class="n">Locality</span> <span class="n">Information</span> <span class="n">Table</span><span class="p">]</span>
+  <span class="n">Localities</span> <span class="p">:</span> <span class="mi">0000000000000004</span>
+<span class="n">Locality</span>   <span class="mi">0</span> <span class="p">:</span> <span class="mi">10</span> <span class="mi">20</span> <span class="mi">20</span> <span class="mi">30</span>
+<span class="n">Locality</span>   <span class="mi">1</span> <span class="p">:</span> <span class="mi">20</span> <span class="mi">10</span> <span class="mi">30</span> <span class="mi">20</span>
+<span class="n">Locality</span>   <span class="mi">2</span> <span class="p">:</span> <span class="n">FF</span> <span class="n">FF</span> <span class="mi">0</span><span class="n">A</span> <span class="n">FF</span>
+<span class="n">Locality</span>   <span class="mi">3</span> <span class="p">:</span> <span class="n">FF</span> <span class="n">FF</span> <span class="n">FF</span> <span class="mi">0</span><span class="n">A</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">cxl-boot-to-bash</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Platform Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../drivers/index.html">CXL Driver Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../memory-hotplug/index.html">Onlining CXL Memory as System RAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../page-allocation/index.html">Allocation of CXL Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dynamic-capacity/index.html">Dynamic Capacity Devices</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Platform Configuration</a><ul>
+  <li><a href="index.html">ACPI Table Reference</a><ul>
+      <li>Previous: <a href="hmat.html" title="previous chapter">HMAT - Heterogeneous Memory Attribute Table</a></li>
+      <li>Next: <a href="../device/index.html" title="next chapter">Device Information</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Gregory Price.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/platform/acpi/slit.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
