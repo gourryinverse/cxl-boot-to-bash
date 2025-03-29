@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BIOS and EFI Configuration" href="example-tables/index.html" />
-    <link rel="prev" title="Proximity Domain Suggestions" href="proximity-domain.html" />
+    <link rel="prev" title="Proximity Domains" href="proximity-domain.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -35,7 +35,40 @@
             
   <section id="decoder-programming-recommendations">
 <h1>Decoder Programming Recommendations<a class="headerlink" href="#decoder-programming-recommendations" title="Link to this heading">¶</a></h1>
-<p>todo -</p>
+<p>If BIOS/EFI intends to program the decoders to be statically configured, there are a few things to consider to avoid major pitfalls that will prevent Linux compatibility.  These recommendations are not required “per the specification”, but Linux makes no guarantees of support if otherwise.</p>
+<section id="translation-point">
+<h2>Translation Point<a class="headerlink" href="#translation-point" title="Link to this heading">¶</a></h2>
+<p>Per the specification, the only decoders which <em>translate</em> Host Physical Address to Device Physical Address are the <strong>Endpoint Decoders</strong>. All other decoders in the fabric are intended to route accesses without translating the addresses.</p>
+<p>Due to some ambiguity in how Architecture, ACPI, PCI, and CXL specifications “hand off” responsibility between domains, some early adopting platforms attempted to do translation at the originating memory controller.  This is configuration requires an platform support extension to the driver and is not officially supported by Linux.</p>
+<p>It is highly recommended <em>not</em> to do this; otherwise, uou are on your own to provide driver support.</p>
+</section>
+<section id="interleave-support-and-flexibility">
+<h2>Interleave support and Flexibility<a class="headerlink" href="#interleave-support-and-flexibility" title="Link to this heading">¶</a></h2>
+<p>If providing cross-host-bridge interleave, a CFMWS entry in the CEDT must be presented with target host-bridges for the interleaved device sets (there may be multiple behind each host bridge).</p>
+<p>If providing intra-host-bridge interleaving, only 1 CFMWS entry in the CEDT is required for that host bridge - if it covers the entire capacity of the devices behind the host bridge.</p>
+<p>If intending to provide users flexibility in programming decoders beyond the root, you may want to provide multiple CFMWS entries in the CEDT intended for different purposes.  For example, you may want to consider adding</p>
+<ol class="arabic simple">
+<li><p>A CFMWS entry to cover all interleavable host bridges.</p></li>
+<li><p>A CFMWS entry to cover all devices on a single host bridge.</p></li>
+<li><p>A CFMWS entry to cover each device.</p></li>
+</ol>
+<p>A platform may choose to add all of these, or change the mode based on a BIOS setting.  For each CFMWS entry, Linux expects descriptions of the described memory regions in the SRAT to determine the number of NUMA nodes it should reserve during early boot / init.</p>
+</section>
+<section id="memory-holes">
+<h2>Memory Holes<a class="headerlink" href="#memory-holes" title="Link to this heading">¶</a></h2>
+<p>If your platform includes memory holes intersparsed between your CXL memory, it’s recommended you utilize multiple decoders to cover these regions of memory, rather than try to program the decoders to accept the entire range and expect Linux to manage the overlap.</p>
+<p>If your platform does not do this, you are on your own to provide driver support.</p>
+</section>
+<section id="multi-media-devices">
+<h2>Multi-Media Devices<a class="headerlink" href="#multi-media-devices" title="Link to this heading">¶</a></h2>
+<p>Devices that have either:</p>
+<ol class="arabic simple">
+<li><p>A multi-purpose media (i.e. persistent mem used as volatile), or</p></li>
+<li><p>Multiple forms of memory</p></li>
+</ol>
+<p>Require special restriction bits (specifically Volatile vs Persistent bits) set in the CFMWS entries in the CEDT.</p>
+<p>A CFMWS may be set to allow either persistent or volatile, but for best flexibility platforms may wish to simply define multiple CFMWS entries to allow flexible configuration by a user at runtime.</p>
+</section>
 </section>
 
 
@@ -79,7 +112,7 @@
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">Platform Configuration</a><ul>
   <li><a href="index.html">BIOS and EFI Configuration</a><ul>
-      <li>Previous: <a href="proximity-domain.html" title="previous chapter">Proximity Domain Suggestions</a></li>
+      <li>Previous: <a href="proximity-domain.html" title="previous chapter">Proximity Domains</a></li>
       <li>Next: <a href="example-tables/index.html" title="next chapter">BIOS and EFI Configuration</a></li>
   </ul></li>
   </ul></li>

@@ -1,6 +1,6 @@
 .. proximity domain documentation
 
-Proximity Domain Suggestions
-============================
+Proximity Domains
+=================
 
 todo - 

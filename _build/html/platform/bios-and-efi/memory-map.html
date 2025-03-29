@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Memory Map Suggestions &#8212; cxl-boot-to-bash  documentation</title>
+    <title>Physical Memory Map &#8212; cxl-boot-to-bash  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
@@ -14,7 +14,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Proximity Domain Suggestions" href="proximity-domain.html" />
+    <link rel="next" title="Proximity Domains" href="proximity-domain.html" />
     <link rel="prev" title="BIOS and EFI Configuration" href="index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -33,11 +33,42 @@
 
           <div class="body" role="main">
             
-  <section id="memory-map-suggestions">
-<h1>Memory Map Suggestions<a class="headerlink" href="#memory-map-suggestions" title="Link to this heading">¶</a></h1>
-<p>todo - alignment</p>
-<div class="toctree-wrapper compound">
+  <section id="physical-memory-map">
+<h1>Physical Memory Map<a class="headerlink" href="#physical-memory-map" title="Link to this heading">¶</a></h1>
+<section id="physical-address-region-alignment">
+<h2>Physical Address Region Alignment<a class="headerlink" href="#physical-address-region-alignment" title="Link to this heading">¶</a></h2>
+<p>As of Linux v6.14, the hotplug memory system requires memory regions to be uniform in size and alignment.  While the CXL specification allows for memory regions as small as 256MB, the supported memory block size and alignment is architecture-defined. Blocks may be as small as 128MB and increase uniformly as a power of two.</p>
+<p>On ARM, the default block size and alignment is either 128MB or 256MB.</p>
+<p>On x86, the default block size is 256MB, and increases to 2GB as the capacity of the system increases up to 64GB.</p>
+<p>For best support, platform vendors should place CXL memory at a 2GB aligned base address, and regions should be 2GB aligned.</p>
+</section>
+<section id="memory-holes">
+<h2>Memory Holes<a class="headerlink" href="#memory-holes" title="Link to this heading">¶</a></h2>
+<p>Holes in the memory map are tricky.  Consider a 4GB device set at base 0x100000000, set up in the following memory map</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x100000000</span>    <span class="o">|</span>
+<span class="o">|</span>                   <span class="o">|</span>
+<span class="o">|</span>        <span class="n">CXL</span>        <span class="o">|</span>
+<span class="o">|</span>                   <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x1BFFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x1C0000000</span>    <span class="o">|</span>
+<span class="o">|</span>    <span class="n">MEMORY</span> <span class="n">HOLE</span>    <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x1FFFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x200000000</span>    <span class="o">|</span>
+<span class="o">|</span>                   <span class="o">|</span>
+<span class="o">|</span>     <span class="n">CXL</span> <span class="n">CONT</span><span class="o">.</span>     <span class="o">|</span>
+<span class="o">|</span>                   <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x23FFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+</pre></div>
 </div>
+<p>There are two issues to consider: decoder programming and memory block alignment.</p>
+<p>If your architecture requires 2GB uniform size and aligned memory blocks, the only capacity Linux is capable of mapping (as of v6.14) would be the capacity from <cite>0x100000000-0x180000000</cite>.  The remaining capacity will be stranded, as they are not of 2GB aligned length.</p>
+<p>Assuming your architecture and memory configuration allows 1GB memory blocks, this memory map is supported and this should be presented as multiple CFMWS in the CEDT that describe each side of the memory hole separately - along with matching decoders.</p>
+<p>Each endpoint intended to be mapped into this layout should plan to use multiple decoders as well.</p>
+</section>
 </section>
 
 
@@ -82,7 +113,7 @@
   <li><a href="../index.html">Platform Configuration</a><ul>
   <li><a href="index.html">BIOS and EFI Configuration</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">BIOS and EFI Configuration</a></li>
-      <li>Next: <a href="proximity-domain.html" title="next chapter">Proximity Domain Suggestions</a></li>
+      <li>Next: <a href="proximity-domain.html" title="next chapter">Proximity Domains</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
