@@ -3,10 +3,29 @@
 Boot To Bash Roadmap
 ====================
 
-- this happens
-- then that happens
-- then this happens
-- and we all get a puppy
+* EFI/BIOS
+
+  * ACPI Table Creation
+  * EFI Memory SP
+
+* Linux Early Boot
+
+  * NUMA Node Creation
+  * EFI Memory Map
+
+* Device Probe
+
+  * ACPI
+  * PCI
+  * CXL
+  * Dax
+
+* Memory Hotplug
+
+  * Memory Map
+  * Memory Blocks
+
+* Allocations
 
 .. toctree::
    :maxdepth: 1
