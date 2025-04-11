@@ -30,6 +30,7 @@ todo
    :caption: Contents:
 
    boot-to-bash.rst
+   efi-bios.rst
    devices/index.rst
    platform/index.rst
    linux/index.rst
