@@ -1,4 +1,4 @@
-.. platform documentation
+.. Linux Early Boot documentation
 
 Linux Init (Early Boot)
 =======================
