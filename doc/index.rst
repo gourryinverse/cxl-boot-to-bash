@@ -16,6 +16,7 @@ todo
 Authors
 -------
 Gregory Price
+Joshua Hahn
 
 Editors
 -------
