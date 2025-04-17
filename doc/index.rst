@@ -30,7 +30,6 @@ todo
    :caption: Contents:
 
    boot-to-bash.rst
-   linux-early-boot.rst
    devices/index.rst
    platform/index.rst
    linux/index.rst

@@ -9,7 +9,7 @@ todo
    :maxdepth: 2
    :caption: Contents:
 
-   early-boot/index.rst
+   early-boot.rst
    driver-operation/index.rst
    memory-hotplug/index.rst
    page-allocation/index.rst
