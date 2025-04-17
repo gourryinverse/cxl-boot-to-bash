@@ -3,8 +3,6 @@
 BIOS and EFI Configuration
 ==========================
 
-todo
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
