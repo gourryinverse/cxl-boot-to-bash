@@ -1,28 +1,44 @@
-.. cxl-boot-to-bash documentation master file
+.. Device Types
 
-Devices
-=======
+Devices Types
+#############
 
 Memory Expanders
-----------------
+****************
+todo
 
+Persistent Memory
+=================
+todo
+
+Volatile Memory
+===============
 todo
 
 Shared Memory Devices
----------------------
-
+*********************
 todo
 
-Dynamic Capacity Devices
-------------------------
+FAMFS
+=====
+todo
 
+Multi-Logical Devices
+*********************
 todo
 
 Multi-Headed Devices
---------------------
-
+********************
 todo
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
+MHSLD
+=====
+todo
+
+MHMLD
+=====
+todo
+
+Dynamic Capacity Devices
+************************
+todo

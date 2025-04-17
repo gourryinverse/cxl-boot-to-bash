@@ -9,4 +9,3 @@ Devices
 
    overview/index.rst
    uefi/index.rst
-   dynamic-capacity/index.rst
