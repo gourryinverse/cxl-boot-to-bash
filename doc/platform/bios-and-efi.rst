@@ -1,10 +1,9 @@
-.. platform documentation
+.. bios-and-efi documentation
 
+EFI Configuration Process
+#########################
 
-Configuration Process
-#####################
-
-The EFI (Extensible Firmware Interface) / BIOS (Basic Input Output System) is
+The BIOS (Basic Input Output System) /  EFI (Extensible Firmware Interface) is
 the first thing that comes up when the system boots. More explicitly, it is what
 the bootloader hands off to initiate the rest of startup. :code:`start_kernel`
 is called in this step, which starts Linux.
@@ -14,8 +13,8 @@ the  CEDT (CXL Early Discovery Table) and SRAT (System Resource Affinity Table).
 More detail on these tables can be found under Platform Configuration -> ACPI
 Table Reference.
 
-EFI Setting Configuration
-#########################
+UEFI Settings
+*************
 The :code:`uefisettings` command can be used to retrieve / set EFI settings.
 Once changes are made, rebooting the machine incorporates the changes made into
 the next boot.
@@ -26,7 +25,7 @@ memory region. Otherwise, the memory is treated as "normal memory", and is
 exposed to the page allocator.
 
 uefisettings examples
-*********************
+=====================
 
 :code:`uefisettings identify` ::
 
@@ -52,10 +51,10 @@ uefisettings examples
 
 
 Physical Memory Map
-###################
+*******************
 
 Physical Address Region Alignment
-*********************************
+=================================
 
 As of Linux v6.14, the hotplug memory system requires memory regions to be uniform in size and alignment.  While the CXL specification allows for memory regions as small as 256MB, the supported memory block size and alignment is architecture-defined. Blocks may be as small as 128MB and increase uniformly as a power of two.
 
@@ -66,7 +65,7 @@ On x86, the default block size is 256MB, and increases to 2GB as the capacity of
 For best support, platform vendors should place CXL memory at a 2GB aligned base address, and regions should be 2GB aligned.
 
 Memory Holes
-************
+============
 
 Holes in the memory map are tricky.  Consider a 4GB device set at base 0x100000000, set up in the following memory map ::
 
@@ -98,7 +97,7 @@ Each endpoint intended to be mapped into this layout should plan to use multiple
 
 
 Decoder Programming
-###################
+*******************
 
 If BIOS/EFI intends to program the decoders to be statically configured,
 there are a few things to consider to avoid major pitfalls that will
@@ -107,7 +106,7 @@ the specification", but Linux makes no guarantees of support otherwise.
 
 
 Translation Point
-*****************
+=================
 Per the specification, the only decoders which *translate* Host Physical
 Address to Device Physical Address are the **Endpoint Decoders**. All other
 decoders in the fabric are intended to route accesses without translating the
@@ -122,8 +121,8 @@ driver and is not officially endorsed - despite being supported.
 It is highly recommended *not* to do this; otherwise, you are on your own
 to provide driver support for your platform.
 
-Interleave support and Flexibility
-**********************************
+Interleave and Configuraiton Flexibility
+========================================
 If providing cross-host-bridge interleave, a CFMWS entry in the CEDT must be
 presented with target host-bridges for the interleaved device sets (there may
 be multiple behind each host bridge).
@@ -143,7 +142,7 @@ different purposes.  For example, you may want to consider adding
 A platform may choose to add all of these, or change the mode based on a BIOS setting.  For each CFMWS entry, Linux expects descriptions of the described memory regions in the SRAT to determine the number of NUMA nodes it should reserve during early boot / init.
 
 Memory Holes
-************
+============
 If your platform includes memory holes intersparsed between your CXL memory, it
 is recommended to utilize multiple decoders to cover these regions of memory,
 rather than try to program the decoders to accept the entire range and expect
@@ -152,7 +151,7 @@ Linux to manage the overlap.
 Linux makes no guarantee of support for strange memory hole situations.
 
 Multi-Media Devices
-*******************
+===================
 Devices that have either: 
 
 1) A multi-purpose media (i.e. persistent mem used as volatile), or
