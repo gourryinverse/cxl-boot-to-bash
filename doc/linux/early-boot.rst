@@ -3,6 +3,13 @@
 Linux Init (Early Boot)
 =======================
 
+Linux configuration is split into two major steps: Early-Boot and everything else.
+
+During early boot, Linux sets up immutible resources (such as numa nodes), while
+later operations include things like driver probe and memory hotplug.  Linux may
+read EFI and ACPI information throughout this process to configure logical
+representations of the devices.
+
 During Linux Early Boot stage (functions in the kernel that have the __init
 decorator), the system takes the resources created by EFI/BIOS (ACPI tables)
 and turns them into resources that the kernel can consume.
