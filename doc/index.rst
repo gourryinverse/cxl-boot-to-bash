@@ -40,20 +40,11 @@ configurations into five main areas:
 
    allocation/index.rst
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Use Cases
 
-Advanced Topics
-===============
-
-* Virtual Machine pass-through
-
-* Logical Device Allocation
-
-* Dynamic Capacity
-
-* Shared Memory
-  
-  * FAMFS
-
+   use-case/index.rst
 
 Contributors
 ############
