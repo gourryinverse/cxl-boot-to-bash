@@ -6,12 +6,6 @@ CXL on Linux: Boot To Bash
 This documentation is intended as a companion to systems engineers (Platform, BIOS, EFI, OS, etc)
 trying to enable CXL devices on Linux.
 
-My only real goal is to help make the CXL ecosystem an ever-so-slightly more sane environment,
-for my own sake. I hope this helps you as well.
-
-Roadmap
-*******
-
 CXL device configuration requires platform (Hardware, BIOS, EFI), OS (early boot, core kernel,
 driver), and user policy decisions that all impact each other.  This doc breaks up these
 configurations into five main areas:
@@ -26,31 +20,48 @@ configurations into five main areas:
    :maxdepth: 2
    :caption: Device Reference
 
-   devices/index.rst
+   devices/overview.rst
+   devices/device-types.rst
+   devices/uefi.rst
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Platform Configuration
 
-   platform/index.rst
+   platform/overview.rst
+   platform/bios-and-efi.rst
+   platform/acpi.rst
+   platform/example-configs.rst
 
 .. toctree::
    :maxdepth: 3
    :caption: Linux Kernel Configuration:
 
-   linux/index.rst
+   linux/overview.rst
+   linux/early-boot.rst
+   linux/cxl-driver.rst
+   linux/dax-driver.rst
+   linux/memory-hotplug.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Memory Allocation
 
-   allocation/index.rst
+   allocation/dax.rst
+   allocation/page-allocator.rst
+   allocation/reclaim.rst
+   allocation/tiering.rst
+   allocation/hugepages.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Use Cases
 
-   use-case/index.rst
+   use-case/memory-expansion.rst
+   use-case/dynamic-capacity.rst
+   use-case/virtual-machines.rst
+   use-case/shared-memory.rst
 
 Contributors
 ############
