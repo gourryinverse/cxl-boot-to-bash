@@ -17,6 +17,12 @@ driver), and user policy decisions that all impact each other.  This doc breaks 
 configurations into five main areas:
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Overview
+
+   self
+
+.. toctree::
    :maxdepth: 2
    :caption: Device Reference
 

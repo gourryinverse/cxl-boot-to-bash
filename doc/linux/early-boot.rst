@@ -14,21 +14,6 @@ During Linux Early Boot stage (functions in the kernel that have the __init
 decorator), the system takes the resources created by EFI/BIOS (ACPI tables)
 and turns them into resources that the kernel can consume.
 
-Handoffs
---------
-
-* Linux consumes ACPI tables to create software resources.
-
-* Memory map is created from the EFI memory map
-
-  * CXL memory is set aside to be handled by the CXL driver
-
-* NUMA nodes and memory tiers are created from the PXM table
-
-* Contiguous Memory Allocator allocates requested memory for each online numa node.
-
-* Init finishes, Drivers start probing.
-
 
 NUMA Nodes
 ----------
