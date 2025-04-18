@@ -1,7 +1,23 @@
-.. damon doc
+.. memory tiering documentation
+
+Memory Tiering
+##############
+
+todo
+
+Memory Tiers
+************
+
+todo
+
+
+Transparent Page Placement
+**************************
+
+todo
 
 Data Access MONitor
-===================
+*******************
 
 to be updated
 
@@ -12,7 +28,3 @@ References
 - `SK Hynix HMSDK Capacity Expansion <https://github.com/skhynix/hmsdk/wiki/Capacity-Expansion>`_
 - `kernel documentation <https://origin.kernel.org/doc/html/latest/mm/damon/>`_
 - `project website <https://damonitor.github.io/>`_
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:

@@ -1,9 +1,10 @@
-.. platform documentation
+.. linux kernel config documentation
 
-Linux Configuration
-===================
+Linux configuration is split into two major steps: Early-Boot and everything else.
 
-todo: overview
+During early boot, Linux sets up immutible resources (such as numa nodes), while later operations
+include things like driver probe and memory hotplug.  Linux may read EFI and ACPI information
+throughout this process to configure logical representations of the devices.
 
 .. toctree::
    :maxdepth: 2
@@ -12,5 +13,3 @@ todo: overview
    early-boot.rst
    driver-operation/index.rst
    memory-hotplug/index.rst
-   page-allocation/index.rst
-   tiering/index.rst

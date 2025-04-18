@@ -1,7 +1,9 @@
 .. platform documentation
 
-Platform Configuration
-######################
+Hardware, BIOS, and EFI are all responsible for configuring static information about devices (or
+potential future devices) such that Linux can build the appropriate logical representations of these
+devices. Much of what this section is concerned with is ACPI Table production and static memory map
+configuration.
 
 Configuration Process
 *********************
