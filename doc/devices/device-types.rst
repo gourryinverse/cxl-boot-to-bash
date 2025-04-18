@@ -15,16 +15,17 @@ Volatile Memory
 ===============
 todo
 
-Shared Memory Devices
-*********************
+
+Logical Devices
+***************
 todo
 
-FAMFS
-=====
+Single-Logical Device (SLD)
+===========================
 todo
 
-Multi-Logical Devices
-*********************
+Multi-Logical Device (MLD)
+==========================
 todo
 
 Multi-Headed Devices
@@ -42,3 +43,12 @@ todo
 Dynamic Capacity Devices
 ************************
 todo
+
+Memory Extents
+==============
+todo
+
+Shared Memory
+=============
+todo
+

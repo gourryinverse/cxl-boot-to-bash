@@ -3,18 +3,39 @@
 Platform Configuration
 ######################
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
+Configuration Process
+*********************
 
-   acpi/index.rst
-   bios-and-efi/index.rst
-
-Handoffs
-********
+At a high level, this is what occurs during this phase of configuration.
 
 * The bootloader starts the EFI / BIOS
-* EFI / BIOS loads drivers (to be used during Device Probe)
-* EFI / BIOS creates CEDT and SRAT tables
-* Calls :code:`start_kernel` and beigns the Linux Early Boot process.
+* BIOS / EFI do early device probe to determine static configuration
+* BIOS / EFI creates ACPI Tables that describe static config for the OS
+* Calls :code:`start_kernel` and begins the Linux Early Boot process.
 
+BIOS And EFI
+************
+
+.. toctree::
+   :maxdepth: 2
+
+   bios-and-efi/index.rst
+
+ACPI
+****
+
+.. toctree::
+   :maxdepth: 2
+
+   acpi/index.rst
+
+Example Platform Configurations
+*******************************
+
+.. toctree::
+   :maxdepth: 2
+
+   example-configurations/one-dev-per-hb.rst
+   example-configurations/multi-dev-per-hb.rst
+   example-configurations/hb-interleave.rst
+   example-configurations/multi-media-dev.rst

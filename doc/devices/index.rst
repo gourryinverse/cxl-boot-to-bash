@@ -1,11 +1,10 @@
 .. devices
 
-Devices
-=======
+Device Reference
+################
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Contents:
+   :maxdepth: 1
 
-   overview/index.rst
-   uefi/index.rst
+   device-types.rst
+   uefi.rst

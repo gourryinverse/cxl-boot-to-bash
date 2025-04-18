@@ -1,7 +1,7 @@
 .. ACPI documentation
 
-ACPI
-####
+ACPI Table Reference
+####################
 
 ACPI is the "Advanced Configuration and Power Interface", which is a standard
 that defines how platforms and OS manage pwoer and configure computer hardware.
@@ -9,20 +9,18 @@ For the purpose of this theory of operation, when referring to "ACPI" we will
 usually refer to "ACPI Tables" - which are the way a platform (BIOS/EFI)
 communicates static configuration information to the operation system.
 
-ACPI Table Reference
-********************
-
 The Following ACPI tables contain *static* configuration and performance data about CXL devices.
+
+ACPI Tables
+***********
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
 
    cedt.rst
    srat.rst
    hmat.rst
    slit.rst
-
 
 The SRAT table may also contain generic port/initiator content that is intended to describe the generic port, but not information about the rest of the path to the endpoint.
 
@@ -34,9 +32,8 @@ Linux uses these tables to configure kernel resources for statically configured 
 - SystemRAM Memory Regions
 - Weighted Interleave Node Weights
 
-
 ACPI Debugging
-**************
+##############
 
 The :code:`acpidump` command can be used at runtime to dump the contents of the
 tables that have been created. Running the command by itself displays the hex
@@ -46,8 +43,8 @@ Running :code:`acpidump -b` will dump out the tables in individual .dat files,
 which :code:`iasl -d` (disassemble) can use to convert into .dsl files, showing
 human-readable tables.
 
-acpidump example
-================
+acpidump
+********
 
 On a machine with CXL: :code:`acpidump -b && iasl -d cedt.dat` ::
 
