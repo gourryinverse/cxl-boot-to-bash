@@ -18,6 +18,7 @@ The Following ACPI tables contain *static* configuration and performance data ab
    acpi/srat.rst
    acpi/hmat.rst
    acpi/slit.rst
+   acpi/dsdt.rst
 
 The SRAT table may also contain generic port/initiator content that is intended to describe the generic port, but not information about the rest of the path to the endpoint.
 
