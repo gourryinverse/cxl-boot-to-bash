@@ -1,14 +1,28 @@
 .. ACPI documentation
 
+ACPI
+####
+
+ACPI is the "Advanced Configuration and Power Interface", which is a standard
+that defines how platforms and OS manage pwoer and configure computer hardware.
+For the purpose of this theory of operation, when referring to "ACPI" we will
+usually refer to "ACPI Tables" - which are the way a platform (BIOS/EFI)
+communicates static configuration information to the operation system.
+
 ACPI Table Reference
-====================
+********************
 
 The Following ACPI tables contain *static* configuration and performance data about CXL devices.
 
-- CEDT : CXL Early Detection Table
-- SRAT : Static / System Resource Attribute Table
-- HMAT : Heterogeneous Memory Attribute Table
-- SLIT : System Locality Information Table
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   cedt.rst
+   srat.rst
+   hmat.rst
+   slit.rst
+
 
 The SRAT table may also contain generic port/initiator content that is intended to describe the generic port, but not information about the rest of the path to the endpoint.
 
@@ -20,11 +34,34 @@ Linux uses these tables to configure kernel resources for statically configured 
 - SystemRAM Memory Regions
 - Weighted Interleave Node Weights
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
 
-   cedt.rst
-   srat.rst
-   hmat.rst
-   slit.rst
+ACPI Debugging
+**************
+
+The :code:`acpidump` command can be used at runtime to dump the contents of the
+tables that have been created. Running the command by itself displays the hex
+contents of the ACPI to stdout. Not very helpful :_(
+
+Running :code:`acpidump -b` will dump out the tables in individual .dat files,
+which :code:`iasl -d` (disassemble) can use to convert into .dsl files, showing
+human-readable tables.
+
+acpidump example
+================
+
+On a machine with CXL: :code:`acpidump -b && iasl -d cedt.dat` ::
+
+        /*
+         * Intel ACPI Component Architecture
+         * AML/ASL+ Disassembler version 20210604 (64-bit version)
+         * Copyright (c) 2000 - 2021 Intel Corporation
+         *
+         * Disassembly of cedt.dat, Fri Apr 11 07:47:31 2025
+         *
+         * ACPI Data Table [CEDT]
+         *
+         * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue
+         */
+
+        [000h 0000   4]                    Signature : "CEDT"    [CXL Early Discovery Table]
+        ...
