@@ -10,10 +10,10 @@ configuration.
 
 At a high level, this is what occurs during this phase of configuration.
 
-* The bootloader starts the EFI / BIOS
+* The bootloader starts the BIOS/EFI.
 
-* BIOS / EFI do early device probe to determine static configuration
+* BIOS/EFI do early device probe to determine static configuration
 
-* BIOS / EFI creates ACPI Tables that describe static config for the OS
+* BIOS/EFI creates ACPI Tables that describe static config for the OS
 
-* Calls :code:`start_kernel` and begins the Linux Early Boot process.
+* BIOS/EFI calls :code:`start_kernel` and begins the Linux Early Boot process.
