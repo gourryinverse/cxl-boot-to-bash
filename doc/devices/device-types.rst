@@ -41,8 +41,8 @@ Largely transparent to Linux once configured.
 Device Types
 ************
 
-Type-1:
-=======
+Type-1
+======
 
 A Type-1 CXL device:
 
@@ -55,8 +55,8 @@ Typical examples of type-1 devices is a Smart NIC - which may want to
 directly operate on host-memory (DMA) to store incoming packets. These
 devices largely rely on CPU-attached memory.
 
-Type-2: 
-=======
+Type-2 
+======
 
 A Type-2 CXL Device:
 
@@ -72,8 +72,8 @@ The allows things like GPUs to expose their memory via DAX devices or file
 descriptors, allows drivers and programs direct access to device memory
 rather than use block-transfer semantics.
 
-Type-3:
-=======
+Type-3
+======
 
 A Type-3 CXL Device
 
