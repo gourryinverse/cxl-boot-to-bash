@@ -28,7 +28,6 @@ configurations into five main areas:
    :maxdepth: 2
    :caption: Platform Configuration
 
-   platform/overview.rst
    platform/bios-and-efi.rst
    platform/acpi.rst
    platform/example-configs.rst

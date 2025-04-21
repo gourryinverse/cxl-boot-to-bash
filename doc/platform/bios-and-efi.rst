@@ -1,28 +1,39 @@
 .. bios-and-efi documentation
 
-EFI Configuration Process
-#########################
+BIOS/EFI Configuration
+######################
 
-The BIOS (Basic Input Output System) /  EFI (Extensible Firmware Interface) is
-the first thing that comes up when the system boots. More explicitly, it is what
-the bootloader hands off to initiate the rest of startup. :code:`start_kernel`
-is called in this step, which starts Linux.
+Hardware, BIOS, and EFI are all responsible for configuring static information
+about devices (or potential future devices) such that Linux can build the
+appropriate logical representations of these devices.
 
-Together, EFI and BIOS program the initial ACPI tables. Notably, they generate
-the  CEDT (CXL Early Discovery Table) and SRAT (System Resource Affinity Table).
-More detail on these tables can be found under Platform Configuration -> ACPI
-Table Reference.
+Much of what this section is concerned with is ACPI Table production and static
+memory map configuration.
+
+At a high level, this is what occurs during this phase of configuration.
+
+* The bootloader starts the BIOS/EFI.
+
+* BIOS/EFI do early device probe to determine static configuration
+
+* BIOS/EFI creates ACPI Tables that describe static config for the OS
+
+* BIOS/EFI calls :code:`start_kernel` and begins the Linux Early Boot process.
+
+BIOS/EFI are responsible for initializing ACPI tables. More detail on these
+tables can be found under Platform Configuration -> ACPI Table Reference.
 
 UEFI Settings
 *************
-The :code:`uefisettings` command can be used to retrieve / set EFI settings.
-Once changes are made, rebooting the machine incorporates the changes made into
-the next boot.
+If your platform supports it, the :code:`uefisettings` command can be used to
+read/write EFI settings. Changes will be reflected on the next reboot. Kexec
+is not a sufficient reboot.
 
-One notable configuration here is the EFI Memory SP (Special Purpose) bit.
-When this is enabled, it means that the driver is responsible for managing the
-memory region. Otherwise, the memory is treated as "normal memory", and is
-exposed to the page allocator.
+One notable configuration here is the EFI_MEMORY_SP (Specific Purpose) bit.
+When this is enabled, this bit tells linux to defer management of a memory
+region to a driver (in this case, the CXL driver). Otherwise, the memory is
+treated as "normal memory", and is exposed to the page allocator during
+:code:`__init`.
 
 uefisettings examples
 =====================
@@ -56,18 +67,28 @@ Physical Memory Map
 Physical Address Region Alignment
 =================================
 
-As of Linux v6.14, the hotplug memory system requires memory regions to be uniform in size and alignment.  While the CXL specification allows for memory regions as small as 256MB, the supported memory block size and alignment is architecture-defined. Blocks may be as small as 128MB and increase uniformly as a power of two.
+As of Linux v6.14, the hotplug memory system requires memory regions to be
+uniform in size and alignment.  While the CXL specification allows for memory
+regions as small as 256MB, the supported memory block size and alignment is
+architecture-defined.
 
-On ARM, the default block size and alignment is either 128MB or 256MB.
+A Linux memory blocks may be as small as 128MB and increase in powers of two.
 
-On x86, the default block size is 256MB, and increases to 2GB as the capacity of the system increases up to 64GB.
+* On ARM, the default block size and alignment is either 128MB or 256MB.
 
-For best support, platform vendors should place CXL memory at a 2GB aligned base address, and regions should be 2GB aligned.
+* On x86, the default block size is 256MB, and increases to 2GB as the
+  capacity of the system increases up to 64GB.
+
+For best support, platform vendors should place CXL memory at a 2GB aligned
+base address, and regions should be 2GB aligned.  This also helps prevent the
+memory hotplug subsystem from creating thousands of memory devices (one per
+block).
 
 Memory Holes
 ============
 
-Holes in the memory map are tricky.  Consider a 4GB device set at base 0x100000000, set up in the following memory map ::
+Holes in the memory map are tricky.  Consider a 4GB device located at base
+address 0x100000000, but with the following following memory map ::
 
   ---------------------
   |    0x100000000    |
@@ -87,13 +108,19 @@ Holes in the memory map are tricky.  Consider a 4GB device set at base 0x1000000
   |    0x23FFFFFFF    |
   ---------------------
 
-There are two issues to consider: decoder programming and memory block alignment.
+Two issues to consider: decoder programming and memory block alignment.
 
-If your architecture requires 2GB uniform size and aligned memory blocks, the only capacity Linux is capable of mapping (as of v6.14) would be the capacity from `0x100000000-0x180000000`.  The remaining capacity will be stranded, as they are not of 2GB aligned length.
+If your architecture requires 2GB uniform size and aligned memory blocks, the
+only capacity Linux is capable of mapping (as of v6.14) would be the capacity
+from `0x100000000-0x180000000`.  The remaining capacity will be stranded, as
+they are not of 2GB aligned length.
 
-Assuming your architecture and memory configuration allows 1GB memory blocks, this memory map is supported and this should be presented as multiple CFMWS in the CEDT that describe each side of the memory hole separately - along with matching decoders.
+Assuming your architecture and memory configuration allows 1GB memory blocks,
+this memory map is supported and this should be presented as multiple CFMWS
+in the CEDT that describe each side of the memory hole separately - along with
+matching decoders.
 
-Each endpoint intended to be mapped into this layout should plan to use multiple decoders as well.
+Multiple decoders can be used to manage such a memory hole.
 
 
 Decoder Programming
@@ -121,7 +148,7 @@ driver and is not officially endorsed - despite being supported.
 It is highly recommended *not* to do this; otherwise, you are on your own
 to provide driver support for your platform.
 
-Interleave and Configuraiton Flexibility
+Interleave and Configuration Flexibility
 ========================================
 If providing cross-host-bridge interleave, a CFMWS entry in the CEDT must be
 presented with target host-bridges for the interleaved device sets (there may
@@ -139,7 +166,10 @@ different purposes.  For example, you may want to consider adding
 2) A CFMWS entry to cover all devices on a single host bridge.
 3) A CFMWS entry to cover each device.
 
-A platform may choose to add all of these, or change the mode based on a BIOS setting.  For each CFMWS entry, Linux expects descriptions of the described memory regions in the SRAT to determine the number of NUMA nodes it should reserve during early boot / init.
+A platform may choose to add all of these, or change the mode based on a BIOS
+setting.  For each CFMWS entry, Linux expects descriptions of the described
+memory regions in the SRAT to determine the number of NUMA nodes it should
+reserve during early boot / init.
 
 Memory Holes
 ============
@@ -160,6 +190,6 @@ Devices that have either:
 Require special restriction bits (specifically Volatile vs Persistent bits) set
 in the CFMWS entries in the CEDT.
 
-A CFMWS may be set to allow either persistent or volatile, but for best flexibility
-platforms may wish to define multiple CFMWS entries to allow flexible configuration
-by a user at runtime.
+A CFMWS may be set to allow either persistent or volatile, but for best
+flexibility platforms may wish to define multiple CFMWS entries to allow flexible
+configuration by a user at runtime.
