@@ -4,9 +4,8 @@
 One Device per Host Bridge
 ==========================
 
-In our example system we will have a single socket with two CXL host bridges.
-Attach to each host bridge is a single CXL memory expander with a 4GB memory
-region.
+This system has a single socket with two CXL host bridges. Each host bridge
+has a single CXL memory expander with a 4GB of memory.
 
 Things to note:
 
