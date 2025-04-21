@@ -20,7 +20,6 @@ configurations into five main areas:
    :maxdepth: 2
    :caption: Device Reference
 
-   devices/overview.rst
    devices/device-types.rst
    devices/uefi.rst
 
