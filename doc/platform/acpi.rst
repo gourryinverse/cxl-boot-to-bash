@@ -33,30 +33,51 @@ Linux uses these tables to configure kernel resources for statically configured 
 ACPI Debugging
 **************
 
-The :code:`acpidump` command can be used at runtime to dump the contents of the
-tables that have been created. Running the command by itself displays the hex
-contents of the ACPI to stdout. Not very helpful :_(
+The :code:`acpidump -b` command dumps the ACPI tables into binary format.
 
-Running :code:`acpidump -b` will dump out the tables in individual .dat files,
-which :code:`iasl -d` (disassemble) can use to convert into .dsl files, showing
-human-readable tables.
+The :code:`iasl -d` command disassembles the files into human readable format.
 
-acpidump
-========
+Example :code:`acpidump -b && iasl -d cedt.dat` ::
 
-On a machine with CXL: :code:`acpidump -b && iasl -d cedt.dat` ::
+  /*
+   * Intel ACPI Component Architecture
+   * AML/ASL+ Disassembler version 20210604 (64-bit version)
+   * Copyright (c) 2000 - 2021 Intel Corporation
+   *
+   * Disassembly of cedt.dat, Fri Apr 11 07:47:31 2025
+   *
+   * ACPI Data Table [CEDT]
+   *
+   * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue
+   */
+   [000h 0000   4]   Signature : "CEDT"    [CXL Early Discovery Table]
+   ...
 
-        /*
-         * Intel ACPI Component Architecture
-         * AML/ASL+ Disassembler version 20210604 (64-bit version)
-         * Copyright (c) 2000 - 2021 Intel Corporation
-         *
-         * Disassembly of cedt.dat, Fri Apr 11 07:47:31 2025
-         *
-         * ACPI Data Table [CEDT]
-         *
-         * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue
-         */
+Common Issues
+=============
+Most failures described here result in a failure of the driver to surface
+memory as a DAX device and/or kmem.
 
-        [000h 0000   4]                    Signature : "CEDT"    [CXL Early Discovery Table]
-        ...
+* CEDT CFMWS targets list UIDs do not match CEDT CHBS UIDs.
+* CEDT CFMWS targets list UIDs do not match DSDT Host Bridge UIDs.
+* CEDT CFMWS Restriction Bits are not correct.
+* CEDT CFMWS Memory regions are poorly aligned.
+* CEDT CFMWS Memory regions spans a planform memory hole.
+* CEDT CHBS UIDs do not match DSDT CXL Host Bridge UIDs.
+* CEDT CHBS Specification version is incorrect.
+* SRAT is missing regions described in CEDT CFMWS.
+
+  * Result: failure to create a NUMA node for the region, or
+    region is placed in wrong node.
+
+* HMAT is missing data for regions described in CEDT CFMWS.
+
+  * Result: NUMA node being placed in the wrong memory tier.
+
+* SLIT has bad data.
+
+  * Result: Lots of performance mechanisms in the kernel will be very unhappy.
+
+All of these issues will appear to users as if the driver is failing to
+support CXL - when in reality they are all the failure of a platform to
+configure the ACPI tables correctly.
