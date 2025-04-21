@@ -10,4 +10,4 @@ Example Platform Configurations
    example-configurations/one-dev-per-hb.rst
    example-configurations/multi-dev-per-hb.rst
    example-configurations/hb-interleave.rst
-   example-configurations/multi-media-dev.rst
+   example-configurations/flexible.rst
