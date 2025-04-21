@@ -3,12 +3,9 @@
 BIOS/EFI Configuration
 ######################
 
-Hardware, BIOS, and EFI are all responsible for configuring static information
-about devices (or potential future devices) such that Linux can build the
-appropriate logical representations of these devices.
-
-Much of what this section is concerned with is ACPI Table production and static
-memory map configuration.
+BIOS and EFI are largely responsible for configuring static information about
+devices (or potential future devices) such that Linux can build the appropriate
+logical representations of these devices.
 
 At a high level, this is what occurs during this phase of configuration.
 
@@ -18,10 +15,18 @@ At a high level, this is what occurs during this phase of configuration.
 
 * BIOS/EFI creates ACPI Tables that describe static config for the OS
 
+* BIOS/EFI create the system memory map (EFI Memory Map, E820, etc)
+
 * BIOS/EFI calls :code:`start_kernel` and begins the Linux Early Boot process.
 
-BIOS/EFI are responsible for initializing ACPI tables. More detail on these
-tables can be found under Platform Configuration -> ACPI Table Reference.
+Much of what this section is concerned with is ACPI Table production and
+static memory map configuration. More detail on these tables can be found
+under Platform Configuration -> ACPI Table Reference.
+
+.. note::
+   Platform Vendors should read carefully, as this sections has recommendations
+   on physical memory region size and alignment, memory holes, HDM interleave,
+   and what linux expects of HDM decoders trying to work with these features.
 
 UEFI Settings
 *************
@@ -50,7 +55,10 @@ uefisettings examples
         product_family: xxx
         product_version: xxx
 
-:code:`uefisettings get "CXL Physical Addressing"` ::
+On some AMD platforms, the :code:`EFI_MEMORY_SP` bit is set via the :code:`CXL
+Memory Attribute` field.  This may be called something else on your platform.
+
+:code:`uefisettings get "CXL Memory Attribute"` ::
 
         selector: xxx
         ...
@@ -60,7 +68,6 @@ uefisettings examples
             ...
         }
 
-
 Physical Memory Map
 *******************
 
@@ -69,8 +76,8 @@ Physical Address Region Alignment
 
 As of Linux v6.14, the hotplug memory system requires memory regions to be
 uniform in size and alignment.  While the CXL specification allows for memory
-regions as small as 256MB, the supported memory block size and alignment is
-architecture-defined.
+regions as small as 256MB, the supported memory block size and alignment for
+hotplugged memory is architecture-defined.
 
 A Linux memory blocks may be as small as 128MB and increase in powers of two.
 
@@ -79,10 +86,9 @@ A Linux memory blocks may be as small as 128MB and increase in powers of two.
 * On x86, the default block size is 256MB, and increases to 2GB as the
   capacity of the system increases up to 64GB.
 
-For best support, platform vendors should place CXL memory at a 2GB aligned
-base address, and regions should be 2GB aligned.  This also helps prevent the
-memory hotplug subsystem from creating thousands of memory devices (one per
-block).
+For best support across versions, platform vendors should place CXL memory at
+a 2GB aligned base address, and regions should be 2GB aligned.  This also helps
+prevent the creating thousands of memory devices (one per block).
 
 Memory Holes
 ============
@@ -92,9 +98,7 @@ address 0x100000000, but with the following following memory map ::
 
   ---------------------
   |    0x100000000    |
-  |                   |
   |        CXL        |
-  |                   |
   |    0x1BFFFFFFF    |
   ---------------------
   |    0x1C0000000    |
@@ -102,13 +106,14 @@ address 0x100000000, but with the following following memory map ::
   |    0x1FFFFFFFF    |
   ---------------------
   |    0x200000000    |
-  |                   |
   |     CXL CONT.     |
-  |                   |
   |    0x23FFFFFFF    |
   ---------------------
 
-Two issues to consider: decoder programming and memory block alignment.
+There are two issues to consider:
+
+* decoder programming, and
+* memory block alignment.
 
 If your architecture requires 2GB uniform size and aligned memory blocks, the
 only capacity Linux is capable of mapping (as of v6.14) would be the capacity
@@ -120,24 +125,43 @@ this memory map is supported and this should be presented as multiple CFMWS
 in the CEDT that describe each side of the memory hole separately - along with
 matching decoders.
 
-Multiple decoders can be used to manage such a memory hole.
+Multiple decoders can (and should) be used to manage such a memory hole (see
+below), but each chunk of a memory hole should be aligned to a reasonable block
+size (larger alignment is always better).  If you intend to have memory holes
+in the memory map, expect to use one decoder per contiguous chunk of host
+physical memory.
+
+As of v6.14, Linux does provide support for memory hotplug of multiple
+physical memory regions separated by a memory hole described by a single
+HDM decoder.
 
 
 Decoder Programming
 *******************
-
 If BIOS/EFI intends to program the decoders to be statically configured,
 there are a few things to consider to avoid major pitfalls that will
-prevent Linux compatibility.  These recommendations are not required "per
-the specification", but Linux makes no guarantees of support otherwise.
+prevent Linux compatibility.  Some of these recommendations are not not
+required "per the specification", but Linux makes no guarantees of support
+otherwise.
 
 
 Translation Point
 =================
-Per the specification, the only decoders which *translate* Host Physical
-Address to Device Physical Address are the **Endpoint Decoders**. All other
-decoders in the fabric are intended to route accesses without translating the
-addresses.
+Per the specification, the only decoders which **TRANSLATE*** Host Physical
+Address (HPA) to Device Physical Address (DPA) are the **Endpoint Decoders**.
+All other decoders in the fabric are intended to route accesses without
+translating the addresses.
+
+This is heavily implied by the specification, see: ::
+
+  CXL Specification 3.1
+  8.2.4.20: CXL HDM Decoder Capability Structure
+  - Implementation Note: CXL Host Bridge and Upstream Switch Port Decoder Flow
+  - Implementation Note: Device Decoder Logic
+
+Given this, Linux makes a strong assumption that decoders between CPU and
+endpoint will all be programmed with addresses ranges that are subsets of
+their parent decoder.
 
 Due to some ambiguity in how Architecture, ACPI, PCI, and CXL specifications
 "hand off" responsibility between domains, some early adopting platforms
@@ -145,8 +169,8 @@ attempted to do translation at the originating memory controller or host
 bridge.  This configuration requires a platform specific extension to the
 driver and is not officially endorsed - despite being supported.
 
-It is highly recommended *not* to do this; otherwise, you are on your own
-to provide driver support for your platform.
+It is *highly recommended* **NOT** to do this; otherwise, you are on your own
+to implement driver support for your platform.
 
 Interleave and Configuration Flexibility
 ========================================
@@ -160,7 +184,7 @@ behind the host bridge.
 
 If intending to provide users flexibility in programming decoders beyond the
 root, you may want to provide multiple CFMWS entries in the CEDT intended for
-different purposes.  For example, you may want to consider adding
+different purposes.  For example, you may want to consider adding:
 
 1) A CFMWS entry to cover all interleavable host bridges.
 2) A CFMWS entry to cover all devices on a single host bridge.
@@ -171,6 +195,10 @@ setting.  For each CFMWS entry, Linux expects descriptions of the described
 memory regions in the SRAT to determine the number of NUMA nodes it should
 reserve during early boot / init.
 
+As of v6.14, Linux will create a NUMA node for each CEDT CFMWS entry, even if
+a matching SRAT entry does not exist; however, this is not guaranteed in the
+future and such a configuration should be avoided.
+
 Memory Holes
 ============
 If your platform includes memory holes intersparsed between your CXL memory, it
@@ -178,18 +206,56 @@ is recommended to utilize multiple decoders to cover these regions of memory,
 rather than try to program the decoders to accept the entire range and expect
 Linux to manage the overlap.
 
+For example, consider the Memory Hole described above ::
+
+  ---------------------
+  |    0x100000000    |
+  |        CXL        |
+  |    0x1BFFFFFFF    |
+  ---------------------
+  |    0x1C0000000    |
+  |    MEMORY HOLE    |
+  |    0x1FFFFFFFF    |
+  ---------------------
+  |    0x200000000    |
+  |     CXL CONT.     |
+  |    0x23FFFFFFF    |
+  ---------------------
+
+Assuming this is provided by a single device attached directly to a host bridge,
+Linux would expect the following decoder programming ::
+
+     -----------------------   -----------------------
+     | root-decoder-0      |   | root-decoder-1      |
+     |   base: 0x100000000 |   |   base: 0x200000000 |
+     |   size:  0xC0000000 |   |   size:  0x40000000 |
+     -----------------------   -----------------------
+                |                         |
+     -----------------------   -----------------------
+     | HB-decoder-0        |   | HB-decoder-1        |
+     |   base: 0x100000000 |   |   base: 0x200000000 |
+     |   size:  0xC0000000 |   |   size:  0x40000000 |
+     -----------------------   -----------------------
+                |                         |
+     -----------------------   -----------------------
+     | ep-decoder-0        |   | ep-decoder-1        |
+     |   base: 0x100000000 |   |   base: 0x200000000 |
+     |   size:  0xC0000000 |   |   size:  0x40000000 |
+     -----------------------   -----------------------
+
+With a CEDT configuration with two CFMWS describing the above root decoders.
+
 Linux makes no guarantee of support for strange memory hole situations.
 
 Multi-Media Devices
 ===================
-Devices that have either: 
+The CFMWS field of the CEDT has special restriction bits which describe whether
+the described memory region allows volatile or persistent memory (or both). If
+the platform intends to support either:
 
-1) A multi-purpose media (i.e. persistent mem used as volatile), or
-2) Multiple forms of memory
+1) A device with multiple medias, or
+2) Using a persistent memory device as normal memory
 
-Require special restriction bits (specifically Volatile vs Persistent bits) set
-in the CFMWS entries in the CEDT.
-
-A CFMWS may be set to allow either persistent or volatile, but for best
-flexibility platforms may wish to define multiple CFMWS entries to allow flexible
-configuration by a user at runtime.
+A platform may wish to create multiple CEDT CFMWS entries to describe the same
+memory, with the intent of allowing the end user flexibility in how that memory
+is configured. Linux does not presently have strong requirements in this area.
