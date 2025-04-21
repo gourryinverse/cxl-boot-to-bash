@@ -46,7 +46,7 @@ CEDT ::
              Restrictions : 0006
                     QtgId : 0001
              First Target : 00000007
-            Second Target : 00000007
+            Second Target : 00000006
 
 SRAT ::
 
