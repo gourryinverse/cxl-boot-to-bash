@@ -1,7 +1,7 @@
 .. Linux Early Boot documentation
 
 Linux Init (Early Boot)
-=======================
+***********************
 
 Linux configuration is split into two major steps: Early-Boot and everything else.
 
@@ -15,54 +15,84 @@ decorator), the system takes the resources created by EFI/BIOS (ACPI tables)
 and turns them into resources that the kernel can consume.
 
 
-NUMA Nodes
-----------
+BIOS, Build and Boot Options
+============================
 
-Linux takes the PXM (proximity domain) table in the SRAT to create NUMA
-nodes in :code:`acpi_numa_init`. Typically, there is a 1:1 correspondance
-between the proximity domains and NUMA nodes (exception: see :code:`fake_pxm`.
-If there are CXL ranges in the CFMWS but not in SRAT, then a fake proximity
-domain is created). As nodes come online, memory tiers are created by grouping
-nodes with similar characteristics together.
+There are 4 pre-boot options that need to be considered during kernel build
+which dictate how memory will be managed by Linux during early boot.
 
-NUMA nodes are *NOT* hot-pluggable.  All *POSSIBLE* NUMA nodes are identified
-at `__init` time, more specifically during `mm_init`.  What this means is that
-the CEDT and SRAT must contain sufficient `proximity domain` information for
-linux to identify how many NUMA nodes are required (and what memory regions
-should be associated with them).
+* EFI_MEMORY_SP
 
-SRAT is the only ACPI defined way of getting Proximity nodes. Linux chooses
-to, at most, map those 1:1 with NUMA nodes.
+  * BIOS/EFI Option that dictates whether memory is SystemRAM or
+    Specific Purpose.  Specific Purpose memory will be deferred to
+    drivers to manage - and not immediately exposed as system RAM.
 
-CEDT adds a description of SPA ranges which Linux may wish to map to one or
-more NUMA nodes
+* CONFIG_EFI_SOFT_RESERVE
 
-The relevant code exists in: linux/drivers/acpi/numa/srat.c
+  * Linux Build config option that dictates whether the kernel supports
+    Specific Purpose memory.
 
-Basically, the heuristic is as follows
+* CONFIG_MHP_DEFAULT_ONLINE_TYPE
 
-1. Add one NUMA node per Proximity Domain described in SRAT (one or more of: memory, cpu, generic initiator).
-2. If SRAT describes some portion of a CFMWS SPA range - do not create a nodes for that CFMWS
-3. If SRAT does not describe memory in a CFMWS SPA range - a node is created for that CFMWS
+  * Linux Build config that dictates whether and how Specific Purpose memory
+    converted to a dax device should be managed (left as DAX or onlined as
+    SystemRAM in ZONE_NORMAL or ZONE_MOVABLE).
 
-In the future, Linux may reject CFMWS not described by SRAT due to the ambiguity of proximity domain association.
+* nosoftreserve
 
-Generally speaking, you will see one NUMA node per Host bridge, unless inter-host-bridge interleave is in use.  In environments with complex QoS concerns, or designed for runtime configuration flexibility, it may be reasonable to create more than one NUMA node per Host bridge.
+  * Linux kernel boot option that dictates whether Soft Reserve should be
+    supported.  Similar to CONFIG_EFI_SOFT_RESERVE.
 
-EFI_MEMORY_SP
--------------
+Memory Map Creation
+===================
 
-While the kernel parses the EFI memory map in :code:`do_add_efi_memmap` (x86),
-it also checks for the EFI MEM SP bit that was set during the EFI/BIOS stage.
-If the bit was set, then that memory range is set aside as :code:`SOFT_RESERVED`
-i.e. defer management to the (CXL) driver. Otherwise, it will be onlined as
-:code:`RAM` or :code:`RESERVED`, depending on whether the EFI MEM WB (writeback)
-bit was set.
+While the kernel parses the EFI memory map, if :code:`Specific Purpose` memory
+is supported and detect, it will set this region aside as :code:`SOFT_RESERVED`.
+
+If :code:`EFI_MEMORY_SP=0`, :code:`CONFIG_EFI_SOFT_RESERVE=n`, or
+:code:`nosoftreserve=y` - Linux will default a CXL device memory region to
+SystemRAM.  This will expose the memory to the kernel page allocator in
+:code:`ZONE_NORMAL`, making it available for use for most allocations (including
+:code:`struct page` and page tables).
+
+If `Specific Purpose` is set and supported, :code:`CONFIG_MHP_DEFAULT_ONLINE_TYPE_*`
+dictates whether the memory is onlined by default (:code:`_OFFLINE` or
+:code:`_ONLINE_*`), and if online which zone to online this memory to by default
+(:code:`_NORMAL` or :code:`_MOVABLE`).
+
+If placed in :code:`ZONE_MOVABLE`, the memory will not be available for most
+kernel allocations (such as :code:`struct page` or page tables).  This may
+significant impact performance depending on the memory capacity of the system.
+
+
+NUMA Node Reservation
+=====================
+
+Linux refers to the proximity domains (:code:`PXM`) defined in the SRAT to
+create NUMA nodes in :code:`acpi_numa_init`. Typically, there is a 1:1 relation
+between :code:`PXM` and NUMA node IDs.
+
+SRAT is the only ACPI defined way of defining Proximity Domains. Linux chooses
+to, at most, map those 1:1 with NUMA nodes. CEDT adds a description of SPA
+ranges which Linux may wish to map to one or more NUMA nodes
+
+If there are CXL ranges in the CFMWS but not in SRAT, then a fake :code:`PXM`
+is created (as of v6.15). In the future, Linux may reject CFMWS not described
+by SRAT due to the ambiguity of proximity domain association.
+
+It is important to note that NUMA node creation cannot be done at runtime. All
+possible NUMA nodes are identified at :code:`__init` time, more specifically
+during :code:`mm_init`. The CEDT and SRAT must contain sufficient :code:`PXM`
+data for Linux to identify NUMA nodes their associated memory regions.
+
+The relevant code exists in: :code:`linux/drivers/acpi/numa/srat.c`.
+
+See the Example Platform Configurations section for more information.
 
 Memory Tiers Creation
----------------------
+=====================
 todo
 
 Contiguous Memory Allocation
-----------------------------
+============================
 todo: explain limitations
