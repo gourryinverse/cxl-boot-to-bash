@@ -39,7 +39,8 @@ into a single memory region. The memory region has been converted to dax. ::
     decoder1.0   decoder5.0  endpoint5   port1  region0
     decoder2.0   decoder5.1  endpoint6   port2  root0
 
-We'll explore this configuration more in-depth in an example configuration.
+For this section we'll explore the devices present in this configuration, but
+we'll explore more configurations in-depth in example configurations below.
 
 Base Devices
 ============
@@ -47,7 +48,7 @@ Most devices in a CXL fabric are a `port` of some kind (because each
 device mostly routes request from one device to the next, rather than
 provide a manageable service).
 
-root
+Root
 ----
 todo: high level explanation, also port vs dport? can we have 2 roots?
 
@@ -70,7 +71,7 @@ Memory Windows (`root decoders`) described in the ACPI CEDT. ::
   # cat decoder0.0/devtype
     cxl_decoder_root
 
-port
+Port
 ----
 A `port` is better described as a `switch port`.  It may represent a host
 bridge connection to the root, or an actual switch port on a switch. ::
@@ -92,7 +93,7 @@ endpoints if the next port is terminal. ::
   # cat endpoint5/devtype
     cxl_port
 
-endpoint
+Endpoint
 --------
 An `endpoint` is a terminal port in the fabric.  This is a `logical device`,
 and may be one of many `logical devices` presented by a memory device. It
@@ -109,8 +110,8 @@ An `endpoint` contains any `endpoint decoders` for this device. ::
     cxl_decoder_endpoint
 
 
-mem (memdev)
-------------
+Memory Device (memdev)
+----------------------
 todo: high level explanation, why no reference to endpoint?
 
 ::
@@ -125,17 +126,59 @@ Decoders
 ========
 todo: explain the difference between decoders and how they're discovered
 
-root decoder
+Root Decoder
 ------------
-todo
+todo:
 
-switch decoder
+* created by CEDT CFMWS
+* target list filled by CFMWS target fields
+* targets validated against CHBS and DSDT.
+* how are memory ranges validated?
+
+::
+
+  # ls /sys/bus/cxl/devices/decoder0.0/
+    cap_pmem           devtype                 region0
+    cap_ram            interleave_granularity  size
+    cap_type2          interleave_ways         start
+    cap_type3          locked                  subsystem
+    create_ram_region  modalias                target_list
+    delete_region      qos_class               uevent
+
+Switch Decoder
 --------------
-todo: what distinguishes a switch from a root decoder?
+todo:
 
-endpoint decoder
+* what distinguishes it from a root decoder?
+* how is it created?
+* how does it get targets?
+* how are targets validated?
+* how are memory ranges validated?
+
+::
+
+  # ls /sys/bus/cxl/devices/decoder0.0/
+    devtype                 locked    size       target_list
+    interleave_granularity  modalias  start      target_type
+    interleave_ways         region    subsystem  uevent
+
+
+Endpoint Decoder
 ----------------
-todo
+todo:
+
+* how is it created?
+* how are memory ranges validated?
+
+::
+
+  # ls /sys/bus/cxl/devices]# ls decoder5.0
+    devtype                 locked    start
+    dpa_resource            modalias  subsystem
+    dpa_size                mode      target_type
+    interleave_granularity  region    uevent
+    interleave_ways         size
+
 
 Regions
 =======
