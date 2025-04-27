@@ -147,7 +147,7 @@ otherwise.
 
 Translation Point
 =================
-Per the specification, the only decoders which **TRANSLATE*** Host Physical
+Per the specification, the only decoders which **TRANSLATE** Host Physical
 Address (HPA) to Device Physical Address (DPA) are the **Endpoint Decoders**.
 All other decoders in the fabric are intended to route accesses without
 translating the addresses.
