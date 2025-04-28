@@ -11,8 +11,8 @@ placed in.
 This section mostly focuses on how these configurations affect the page
 allocator (as of Linux v6.15) rather than the overall page allocator behavior.
 
-NUMA nodes and (mempolicy)
-**************************
+NUMA nodes and mempolicy
+************************
 Unless a task explicitly registers a mempolicy, the default memory policy
 of the linux kernel is to allocate memory from the `local NUMA node` first,
 and fall back to other nodes only if the local node is pressured.
