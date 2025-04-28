@@ -3,82 +3,102 @@
 Overview
 ########
 
-* Early Boot
+This section presents the configuration process of a CXL Type-3 memory device,
+and how it is ultimately exposed to users as either a :code:`DAX` device or
+normal memory pages via the kernel's page allocator.
 
-  * Linux Boot Parameters
+Portions marked with a bullet are points at which certain kernel objects
+are generated.
 
-    * nosoftreserve
+1) Early Boot
 
-  * Memory Map Creation
+  a) BIOS, Build, and Boot Parameters
 
-    * EFI Memory Map / E820 Consulted for Soft-Reserved
+    i) EFI_MEMORY_SP
+    ii) CONFIG_EFI_SOFT_RESERVE
+    iii) CONFIG_MHP_DEFAULT_ONLINE_TYPE
+    iv) nosoftreserve
+
+  b) Memory Map Creation
+
+    i) EFI Memory Map / E820 Consulted for Soft-Reserved
 
       * CXL Memory is set aside to be handled by the CXL driver
 
       * IO Resources are created for CFMWS entry
 
-  * NUMA Node Creation
+  c) NUMA Node Creation
 
     * ACPI CEDT and SRAT table are used to create Nodes from Proximity domains (PXM)
 
-  * Memory Tier Creation
+  d) Memory Tier Creation
 
-    * A default tier is created with all nodes.
+    * A default memory_tier is created with all nodes.
 
-  * Contiguous Memory Allocation
+  e) Contiguous Memory Allocation
 
     * Any requested CMA is allocated from Online nodes
 
-  * Init Finishes, Drivers start probing
+  f) Init Finishes, Drivers start probing
 
-* ACPI and PCI Drivers
+2) ACPI and PCI Drivers
 
-  * Detect CXL device, marking it for probe by CXL driver
+  a) Detect CXL device, marking it for probe by CXL driver
 
-* CXL Driver Operation
+  b) This portion will not be covered specifically.
 
-  * Base object creation (root, port, memdev)
+3) CXL Driver Operation
 
+  a) Base device creation
+
+    * root, port, and memdev devices created
     * CEDT CFMWS IO Resource creation
 
-  * Decoder creation (root, switch, endpoint)
+  b) Decoder creation
 
-  * Logical device creation (region, endpoint)
+    * root, switch, and endpoint decoders created
 
-  * Devices are associated with each other
+  c) Logical device creation
+  
+    * memory_region and endpoint devices created
 
-    * If auto-decoder (BIOS-programmed decoders), driver validates configurations and locks everything.
+  d) Devices are associated with each other
 
-  * Regions surfaced as DAX region
+    * If auto-decoder (BIOS-programmed decoders), driver validates
+      configurations, builds associations, and locks configs at probe time.
 
-    * DAX Region surfaced as DAX device
+    * If user-configured, validation and associations are built at
+      decoder-commit time.
 
-* DAX Driver Operation
+  e) Regions surfaced as DAX region
 
-  * DAX driver surfaces DAX region as one of two dax device modes
+    * dax_region created
 
-    * kmem - dax device is converted to hotplug memory
+    * DAX device created via DAX driver
 
-    * hmem - dax device is left to be accessed as a file.
+4) DAX Driver Operation
 
-  * DAX driver surfaces dax device to /dev/daxX.Y
+  a) DAX driver surfaces DAX region as one of two dax device modes
 
-    * DAX kmem IO resource creation
+    * kmem - dax device is converted to hotplug memory blocks
+    
+      * DAX kmem IO resource creation
 
-    * If hmem, journey ends here.
+    * hmem - dax device is left as daxdev to be accessed as a file.
+    
+      * If hmem, journey ends here.
 
-  * DAX kmem surfaces memory region to Memory Hotplug to add to page allocator as "driver managed memory"
+  b) DAX kmem surfaces memory region to Memory Hotplug to add to page
+     allocator as "driver managed memory"
 
-* Memory Hotplug
+5) Memory Hotplug
 
-  * mhp component surfaces a memory region as multiple memory blocks to the page allocator
+  a) mhp component surfaces a dax device memory region as multiple memory
+     blocks to the page allocator
 
-    * blocks appear in /sys/bus/memory/devices and /sys/bus/memory/node/devices/nodeN/
+    * blocks appear in :code:`/sys/bus/memory/devices` and linked to a NUMA node
 
-  * blocks are onlined into the requested zone (NORMAL or MOVABLE)
+  b) blocks are onlined into the requested zone (NORMAL or MOVABLE)
 
-    * Build option: CONFIG_MHP_DEFAULT_ONLINE_TYPE_*
-
-    * Boot option: memhp_default_state
-
-  * Memory is marked "Driver Managed" to avoid kexec from using it as region for kernel updates
+    * Memory is marked "Driver Managed" to avoid kexec from using it as region
+      for kernel updates
