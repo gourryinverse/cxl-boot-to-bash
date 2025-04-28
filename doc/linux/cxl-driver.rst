@@ -50,20 +50,25 @@ provide a manageable service).
 
 Root
 ----
-todo: high level explanation, also port vs dport? can we have 2 roots?
+The `CXL Root` is logical object created by the `cxl_acpi` driver during
+:code:`cxl_acpi_probe` - if the :code:`ACPI0017` `Compute Express Link
+Root Object` Device Class is found.
+
+The Root contains links to:
+
+* `Host Bridge Ports` defined by ACPI CEDT CHBS.
+
+* `Root Decoders` defined by ACPI CEDT CFMWS.
 
 ::
 
-  # ls /sys/bus/cxl/devoces/root0
+  # ls /sys/bus/cxl/devices/root0
     decoder0.0          dport0  dport5    port2  subsystem
     decoders_committed  dport1  modalias  port3  uevent
     devtype             dport4  port1     port4  uport
 
-  # cat devtype
+  # cat /sys/bus/cxl/devices/root0/devtype
     cxl_port
-
-The root contains references to all host bridges (ports) and CXL Fixed
-Memory Windows (`root decoders`) described in the ACPI CEDT. ::
 
   # cat port1/devtype
     cxl_port
@@ -71,10 +76,18 @@ Memory Windows (`root decoders`) described in the ACPI CEDT. ::
   # cat decoder0.0/devtype
     cxl_decoder_root
 
+The root is first `logical port` in the CXL fabric, as presented by the Linux
+CXL driver.  The `CXL root` is a special type of `switch port`, in that it
+only has downstream port connections.
+
 Port
 ----
-A `port` is better described as a `switch port`.  It may represent a host
-bridge connection to the root, or an actual switch port on a switch. ::
+A `port` object is better described as a `switch port`.  It may represent a
+host bridge to the root or an actual switch port on a switch. A `switch port`
+contains one or more decoders used to route memory requests downstream ports,
+which may be connected to another `switch port` or an `endpoint port`.
+
+::
 
   # ls /sys/bus/cxl/devices/port1
     decoder1.0          dport0    driver     parent_dport  uport
@@ -84,37 +97,58 @@ bridge connection to the root, or an actual switch port on a switch. ::
   # cat devtype
     cxl_port
 
-A port contains decoders for routing to downstream ports, and may contain
-endpoints if the next port is terminal. ::
-
   # cat decoder1.0/devtype
     cxl_decoder_switch
 
   # cat endpoint5/devtype
     cxl_port
 
+CXL `Host Bridges` in the fabric are probed during :code:`cxl_acpi_probe` at
+the time the `CXL Root` is probed.  The allows for the immediate logical
+connection to between between the root and host bridge.
+
+* The root has a downstream port connection to a host bridge
+
+* The host bridge has an upstream port connection to the root.
+
+* The host bridge has one or more downstream port connections to switch
+  or endpoint ports.
+
+A `Host Bridge` is a special type of CXL `switch port`. It is explicitly
+defined in the ACPI specification via `ACPI0016` ID.  `Host Bridge` ports
+will be probed at `acpi_probe` time, while similar ports on an actual switch
+will be probed later.  Otherwise, switch and host bridge ports look very
+similar - the both contain switch decoders which route accesses between
+upstream and downstream ports.
+
 Endpoint
 --------
 An `endpoint` is a terminal port in the fabric.  This is a `logical device`,
 and may be one of many `logical devices` presented by a memory device. It
-is still considered a type of `port` in the fabric. ::
+is still considered a type of `port` in the fabric.
+
+An `endpoint` contains `endpoint decoders` available for use and the
+*Coherent Device Attribute Table* (CDAT) used to describe the capabilities
+of the device. ::
 
   # ls /sys/bus/cxl/devices/endpoint5
+    CDAT        decoders_committed  modalias      uevent
+    decoder5.0  devtype             parent_dport  uport
+    decoder5.1  driver              subsystem
 
-  # cat devtype
+  # cat /sys/bus/cxl/devices/endpoint5/devtype
     cxl_port
 
-An `endpoint` contains any `endpoint decoders` for this device. ::
-
-  # cat decoder5.0/devtype
+  # cat /sys/bus/cxl/devices/endpoint5/decoder5.0/devtype
     cxl_decoder_endpoint
 
 
 Memory Device (memdev)
 ----------------------
-todo: high level explanation, why no reference to endpoint?
-
-::
+A `memdev` is probed and added by the `cxl_pci` driver in :code:`cxl_pci_probe`
+and is managed by the `cxl_mem` driver. It primarily provides the `IOCTL`
+interface to a memory device, via :code:`/dev/cxl/memN`, and exposes various
+device configuration data. ::
 
   # ls /sys/bus/cxl/devices/mem0
     dev       firmware_version    payload_max  security   uevent
@@ -124,7 +158,46 @@ todo: high level explanation, why no reference to endpoint?
 
 Decoders
 ========
-todo: explain the difference between decoders and how they're discovered
+A decoder is short of a CXL Host-Managed Device Memory (HDM) Decoder. It is
+a device that routes accesses through the CXL fabric to an endpoint, and at
+the endpoint translates a `Host Physical` to `Device Physical` Addressing.
+
+The CXL 3.1 specification heavily implies that only endpoint decoders should
+engage in translation of `Host Physical Address` to `Device Physical Address`.
+
+Specifically ::
+
+  8.2.4.20 CXL HDM Decoder Capability Structure
+
+  IMPLEMENTATION NOTE
+  CXL Host Bridge and Upstream Switch Port Decode Flow
+
+  IMPLEMENTATION NOTE
+  Device Decode Logic
+
+These notes imply that there are two logical types of decoders.
+
+* Routing Decoder - a decoder which routes accesses but does not translate
+  addresses from HPA to DPA.
+
+* Translating Decoder - a decoder which translates accesses from HPA to DPA
+  for an endpoint to service.
+
+The CXL drivers distinguish 3 decoder types: root, switch, and endpoint.
+
+.. note::
+
+   Platform vendors be aware:
+
+   Linux makes a strong assumption that endpoint decoders are the only decoder
+   in the fabric that actively translates HPA to DPA.  Linux assumes routing
+   decoders pass the HPA unchanged to the next decoder in the fabric.
+
+   It is therefore assumed that any given decoder in the fabric will have an
+   address range that is a subset of its upstream port decoder. Any deviation
+   from this scheme is not supported by the core CXL driver and will require
+   additional extensions.
+
 
 Root Decoder
 ------------
