@@ -49,8 +49,8 @@ configurations into five main areas:
    allocation/dax.rst
    allocation/page-allocator.rst
    allocation/reclaim.rst
-   allocation/tiering.rst
    allocation/hugepages.rst
+   allocation/tiering.rst
 
 .. toctree::
    :maxdepth: 2
