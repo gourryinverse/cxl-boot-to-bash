@@ -6,11 +6,12 @@ The final phase of surfacing CXL memory to the kernel page allocator is for
 the `DAX` driver to surface a `Driver Managed` memory region via the
 memory-hotplug component.
 
-There are three major configurations to consider
+There are four major configurations to consider
 
 1) Default Online Behavior (on/off and zone)
 2) Hotplug Memory Block size
 3) Memory Map Resource location
+4) Driver-Managed Memory Designation
 
 Default Online Behavior
 ***********************
@@ -65,3 +66,12 @@ that node, as it is a :code:`GFP_KERNEL` allocation.
 Systems with extremely large amounts of :code:`ZONE_MOVABLE` memory (e.g.
 CXL memory pools) must ensure that there is sufficient local
 :code:`ZONE_NORMAL` capacity to host the memory map for the hotplugged capacity.
+
+Driver Managed Memory
+*********************
+The DAX driver surfaces this memory to memory-hotplug as "Driver Managed". This
+is not a configurable setting, but it's important to not that driver managed
+memory is explicitly excluded from use during kexec.  This is required to ensure
+any reset or out-of-band operations that the CXL device may be subject to during
+a functional system-reboot (such as a reset-on-probe) will not cause portions of
+the kexec kernel to be overwritten.
