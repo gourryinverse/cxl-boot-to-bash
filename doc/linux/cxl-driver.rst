@@ -185,9 +185,7 @@ These notes imply that there are two logical types of decoders.
 
 The CXL drivers distinguish 3 decoder types: root, switch, and endpoint.
 
-.. note::
-
-   Platform vendors be aware:
+.. note:: PLATFORM VENDORS BE AWARE
 
    Linux makes a strong assumption that endpoint decoders are the only decoder
    in the fabric that actively translates HPA to DPA.  Linux assumes routing
@@ -198,15 +196,37 @@ The CXL drivers distinguish 3 decoder types: root, switch, and endpoint.
    from this scheme is not supported by the core CXL driver and will require
    additional extensions.
 
+Decoders may have one or more `Downstream Targets` if configured to interleave
+memory accesses.  This will be presented in sysfs via the :code:`target_list`
+parameter.
 
 Root Decoder
 ------------
-todo:
+A `root` decoder is a decoder present in the `CXL Root`.  It is a type of
+`Routing Decoder`, and is the first decoder in the CXL fabric to recieve
+a memory access from the platform's memory controllers.
 
-* created by CEDT CFMWS
-* target list filled by CFMWS target fields
-* targets validated against CHBS and DSDT.
-* how are memory ranges validated?
+`Root Decoders` are created during :code:`cxl_acpi_probe`.  One root decoder
+is created per CFMWS entry in the ACPI CEDT.
+
+The :code:`target_list` parameter is filled by the CFMWS target fields. Targets
+of a root decoder are `Host Bridges`, which means interleave done at the root
+decoder level is an `Inter-Host-Bridge Interleave`.
+
+Only root decoders are capable of `Inter-Host-Bridge Interleave`.
+
+Such interleaves must be configured by the platform and described in the ACPI
+CEDT CFMWS, as the target CXL host bridge UIDs in the CFMWS must match the CXL
+host bridge UIDs in the ACPI CEDT CHBS and ACPI DSDT.
+
+Interleave settings in a rootdecoder describe how to interleave accesses among
+the *immediate downstream targets*, not the entire interleave set.
+
+The memory range described in the root decoder is used to
+
+1) Create a memory region (:code:`region0` in this example), and
+
+2) Associate the region with an IO Memory Resource (:code:`kernel/resource.c`)
 
 ::
 
@@ -218,40 +238,84 @@ todo:
     create_ram_region  modalias                target_list
     delete_region      qos_class               uevent
 
+  # cat /sys/bus/cxl/devices/decoder0.0/region0/resource
+    0xc050000000
+
+The resource is created during early boot when the CFMWS region is identified
+in the EFI Memory Map or E820 table (on x86).
+
+Root decoders are defined as a separate devtype, but are also a type
+of `Switch Decoder`. ::
+
+  # cat /sys/bus/cxl/devices/decoder0.0/devtype
+    cxl_decoder_root
+
 Switch Decoder
 --------------
-todo:
+Any non-root, translating decoder is considered a `Switch Decoder`, and will
+present with the type :code:`cxl_decoder_switch`. Both `Host Bridge` and `CXL
+Switch` (device) decoders are of type :code:`cxl_decoder_switch`. ::
 
-* what distinguishes it from a root decoder?
-* how is it created?
-* how does it get targets?
-* how are targets validated?
-* how are memory ranges validated?
-
-::
-
-  # ls /sys/bus/cxl/devices/decoder0.0/
+  # ls /sys/bus/cxl/devices/decoder1.0/
     devtype                 locked    size       target_list
     interleave_granularity  modalias  start      target_type
     interleave_ways         region    subsystem  uevent
 
+  # cat /sys/bus/cxl/devices/decoder1.0/devtype
+    cxl_decoder_switch
+
+  # cat /sys/bus/cxl/devices/decoder1.0/region
+    region0
+
+A `Switch Decoder` has associations between a region defined by a root
+decoder and downstream target ports.  Interleaving done within a switch decoder
+is a multi-downstream-port interleave (or `Intra-Host-Bridge Interleave` for
+host bridges).
+
+Interleave settings in a switch decoder describe how to interleave accesses
+among the *immediate downstream targets*, not the entire interleave set.
+
+Switch decoders are created during :code:`cxl_switch_port_probe` in the
+:code:`cxl_port` driver, and is created based on a PCI device's DVSEC
+registers.
+
+Switch decoder programming is validated during probe if the platform programs
+them during boot (See `Auto Decoders` below), or on commit if programmed at
+runtime (See `Runtime Programming` below).
+
 
 Endpoint Decoder
 ----------------
-todo:
+Any decoder attached to a *terminal* point in the CXL fabric (`An Endpoint`) is
+considered an `Endpoint Decoder`. Endpoint decoders are of type
+:code:`cxl_decoder_endpoint`. ::
 
-* how is it created?
-* how are memory ranges validated?
-
-::
-
-  # ls /sys/bus/cxl/devices]# ls decoder5.0
+  # ls /sys/bus/cxl/devices/decoder5.0
     devtype                 locked    start
     dpa_resource            modalias  subsystem
     dpa_size                mode      target_type
     interleave_granularity  region    uevent
     interleave_ways         size
 
+  # cat /sys/bus/cxl/devices/decoder5.0/devtype
+    cxl_decoder_endpoint
+
+  # cat /sys/bus/cxl/devices/decoder5.0/region
+    region0
+
+An `Endpoint Decoder` has an association with a region defined by a root
+decoder and describes the device-local resource associated with this region.
+
+Unlike root and switch decoders, endpoint decoders translate `Host Physical` to
+`Device Physical` address ranges.  The interleave settings on an endpoint
+therefore describe the entire *interleave set*.
+
+As of Linux v6.15, Linux does not support *imbalanced* interleave setups, all
+endpoints contained in an interleave set are are expected to have the same
+interleave settings (granularity and ways must be the same).
+
+Endpoint decoders are created during :code:`cxl_endpoint_port_probe` in the
+:code:`cxl_port` driver, and is created based on a PCI device's DVSEC registers.
 
 Regions
 =======
