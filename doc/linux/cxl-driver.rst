@@ -193,7 +193,8 @@ endpoint decoders are Translating Decoders, all others are Routing Decoders.
 
    It is therefore assumed that any given decoder in the fabric will have an
    address range that is a subset of its upstream port decoder. Any deviation
-   from this scheme is not supported.
+   from this scheme undefined per the specification.  Linux prioritizes
+   spec-defined / architectural behavior.
 
 Decoders may have one or more `Downstream Targets` if configured to interleave
 memory accesses.  This will be presented in sysfs via the :code:`target_list`
