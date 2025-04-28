@@ -158,14 +158,13 @@ device configuration data. ::
 
 Decoders
 ========
-A decoder is short of a CXL Host-Managed Device Memory (HDM) Decoder. It is
+A `Decoder` is short for a CXL Host-Managed Device Memory (HDM) Decoder. It is
 a device that routes accesses through the CXL fabric to an endpoint, and at
 the endpoint translates a `Host Physical` to `Device Physical` Addressing.
 
 The CXL 3.1 specification heavily implies that only endpoint decoders should
 engage in translation of `Host Physical Address` to `Device Physical Address`.
-
-Specifically ::
+::
 
   8.2.4.20 CXL HDM Decoder Capability Structure
 
@@ -175,7 +174,7 @@ Specifically ::
   IMPLEMENTATION NOTE
   Device Decode Logic
 
-These notes imply that there are two logical types of decoders.
+These notes imply that there are two logical groups of decoders.
 
 * Routing Decoder - a decoder which routes accesses but does not translate
   addresses from HPA to DPA.
@@ -183,7 +182,8 @@ These notes imply that there are two logical types of decoders.
 * Translating Decoder - a decoder which translates accesses from HPA to DPA
   for an endpoint to service.
 
-The CXL drivers distinguish 3 decoder types: root, switch, and endpoint.
+The CXL drivers distinguish 3 decoder types: root, switch, and endpoint. Only
+endpoint decoders are Translating Decoders, all others are Routing Decoders.
 
 .. note:: PLATFORM VENDORS BE AWARE
 
@@ -193,8 +193,7 @@ The CXL drivers distinguish 3 decoder types: root, switch, and endpoint.
 
    It is therefore assumed that any given decoder in the fabric will have an
    address range that is a subset of its upstream port decoder. Any deviation
-   from this scheme is not supported by the core CXL driver and will require
-   additional extensions.
+   from this scheme is not supported.
 
 Decoders may have one or more `Downstream Targets` if configured to interleave
 memory accesses.  This will be presented in sysfs via the :code:`target_list`
@@ -202,9 +201,15 @@ parameter.
 
 Root Decoder
 ------------
-A `root` decoder is a decoder present in the `CXL Root`.  It is a type of
-`Routing Decoder`, and is the first decoder in the CXL fabric to recieve
-a memory access from the platform's memory controllers.
+A `Root Decoder` is logical construct of the physical address and interleave
+configurations present in the ACPI CEDT CFMWS.  Linux presents this information
+as a decoder present in the `CXL Root`.  We consider this a `Root Decoder`,
+though technically it exists on the boundary of the CXL specification and
+platform-specific CXL root implementations.
+
+Linux considers these logical decoders a type of `Routing Decoder`, and is the
+first decoder in the CXL fabric to recieve a memory access from the platform's
+memory controllers.
 
 `Root Decoders` are created during :code:`cxl_acpi_probe`.  One root decoder
 is created per CFMWS entry in the ACPI CEDT.
@@ -241,11 +246,11 @@ The memory range described in the root decoder is used to
   # cat /sys/bus/cxl/devices/decoder0.0/region0/resource
     0xc050000000
 
-The resource is created during early boot when the CFMWS region is identified
-in the EFI Memory Map or E820 table (on x86).
+The IO Memory Resource is created during early boot when the CFMWS region is
+identified in the EFI Memory Map or E820 table (on x86).
 
 Root decoders are defined as a separate devtype, but are also a type
-of `Switch Decoder`. ::
+of `Switch Decoder` due to having downstream targets. ::
 
   # cat /sys/bus/cxl/devices/decoder0.0/devtype
     cxl_decoder_root
@@ -310,9 +315,13 @@ Unlike root and switch decoders, endpoint decoders translate `Host Physical` to
 `Device Physical` address ranges.  The interleave settings on an endpoint
 therefore describe the entire *interleave set*.
 
+`Device Physical Address` regions must be committed in-order. For example, the
+DPA region starting at 0x80000000 cannot be committed before the DPA region
+starting at 0x0.
+
 As of Linux v6.15, Linux does not support *imbalanced* interleave setups, all
-endpoints contained in an interleave set are are expected to have the same
-interleave settings (granularity and ways must be the same).
+endpoints in an interleave set are are expected to have the same interleave
+settings (granularity and ways must be the same).
 
 Endpoint decoders are created during :code:`cxl_endpoint_port_probe` in the
 :code:`cxl_port` driver, and is created based on a PCI device's DVSEC registers.
@@ -322,8 +331,11 @@ Regions
 
 Memory Region
 -------------
-todo
-::
+A `Memory Region` is a logical construct that connects a set of CXL ports in
+the fabric to an IO Memory Resource.  It is ultimately used to expose the memory
+on these devices to the DAX subsystem via a `DAX Region`.
+
+An example RAM region: ::
 
   # ls /sys/bus/cxl/devices/region0/
     access0      devtype                 modalias  subsystem  uuid
@@ -331,11 +343,22 @@ todo
     commit       interleave_granularity  resource  target1
     dax_region0  interleave_ways         size      uevent
 
+A memory region can be constructed during endpoint probe, if decoders were
+programmed by BIOS/EFI (see `Auto Decoders`), or by creating a region manually
+via a `Root Decoder`'s :code:`create_ram_region` or :code:`create_pmem_region`
+interfaces.
+
+The interleave settings in a `Memory Region` describe the configuration of the
+`Interleave Set` - and are what can be expected to be seen in the endpoint
+interleave settings.
+
+
 DAX Region
 ----------
-todo
-
-::
+A `DAX Region` is used to convert a CXL `Memory Region` to a DAX device. A
+DAX device may then be accessed directly via a file descriptor interface, or
+converted to System RAM via the DAX kmem driver.  See the DAX driver section
+for more details. ::
 
   # ls /sys/bus/cxl/devices/dax_region0/
     dax0.0      devtype  modalias   uevent
@@ -360,7 +383,18 @@ Decoder Programming
 
 Runtime Programming
 ===================
-todo: basic example of decoder programming steps.
+During probe, the only decoders *required* to be programmed are `Root Decoders`.
+In reality, `Root Decoders` are a logical construct to describe the memory
+region and interleave configuration at the host bridge level - as described
+in the ACPI CEDT CFMWS.
+
+All other `Switch` and `Endpoint` decoders may be programmed by the user
+at runtime - if the platform supports such configurations.
+
+This interaction is what creates a `Software Defined Memory` environment.
+
+See the :code:`cxl-cli` documentation for more information about how to
+configure CXL decoders at runtime.
 
 Auto Decoders
 =============
@@ -381,17 +415,112 @@ allocator - effectively stranding it.
 
 Interleave
 ==========
-todo
 
-* CFMWS, CHBS, and Root Decoders
+The Linux CXL driver supports `Cross-Link First` interleave. This dictates
+how interleave is programmed at each decoder step, as the driver validates
+the relationships between a decoder and it's parent.
 
-* Decoder-type behavior (root/switch route, endpoints translate)
+For example, in a `Cross-Link First` interleave setup with 16 endpoints
+attached to 4 host bridges, linux expects the following ways/granularity
+across the root, host bridge, and endpoints respectively. ::
 
-* Unbalanced configurations are not supported by Linux.
+                   ways   granularity
+  root              4        256
+  host bridge       4       1024
+  endpoint         16        256
 
-Surfacing Memory as DAX
-***********************
-todo: explain any additional steps taken to hand off control to dax
+At the root, every a given access will be routed to the
+:code:`((HPA / 256) % 4)th` target host bridge. Within a host bridge, every
+:code:`((HPA / 1024) % 4)th` target endpoint.  Each endpoint will translate
+the access based on the entire 16 device interleave set.
+
+Unbalanced interleave sets are not supported - decoders at a similar point
+in the hierarchy (e.g. all host bridge decoders) must have the same ways and
+granularity configuration.
+
+At Root
+-------
+Root decoder interleave is defined by the ACPI CEDT CFMWS.  The CEDT
+may actually define multiple CFMWS configurations to describe the same
+physical capacity - with the intent to allow users to decide at runtime
+whether to online memory as interleaved or non-interleaved. ::
+
+             Subtable Type : 01 [CXL Fixed Memory Window Structure]
+       Window base address : 0000000100000000
+               Window size : 0000000100000000
+  Interleave Members (2^n) : 00
+     Interleave Arithmetic : 00
+              First Target : 00000007
+
+             Subtable Type : 01 [CXL Fixed Memory Window Structure]
+       Window base address : 0000000200000000
+               Window size : 0000000100000000
+  Interleave Members (2^n) : 00
+     Interleave Arithmetic : 00
+              First Target : 00000006
+
+             Subtable Type : 01 [CXL Fixed Memory Window Structure]
+       Window base address : 0000000300000000
+               Window size : 0000000200000000
+  Interleave Members (2^n) : 01
+     Interleave Arithmetic : 00
+              First Target : 00000007
+               Next Target : 00000006
+
+In this example, the CFMWS defines two discrete non-interleaved 4GB regions
+for each host bridge, and one interleaved 8GB region that targets both. This
+would result in 3 root decoders presenting in the root. ::
+
+  # ls /sys/bus/cxl/devices/root0
+    decoder0.0  decoder0.1  decoder0.2
+
+  # cat /sys/bus/cxl/devices/decoder0.0/target_list start size
+    7
+    0x100000000
+    0x100000000
+
+  # cat /sys/bus/cxl/devices/decoder0.1/target_list start size
+    6
+    0x200000000
+    0x100000000
+
+  # cat /sys/bus/cxl/devices/decoder0.2/target_list start size
+    7,6
+    0x300000000
+    0x200000000
+
+These decoders are not runtime programmable.  They are used to generate a
+`Memory Region` to bring this memory online with runtime programmed settings
+at the `Switch` and `Endpoint` decoders.
+
+At Host Bridge or Switch
+------------------------
+`Host Bridge` and `Switch` decoders are programmable via the following fields:
+
+- :code:`start` - the HPA region associated with the memory region
+- :code:`size` - the size of the region
+- :code:`target_list` - the list of downstream ports
+- :code:`interleave_ways` - the number downstream ports to interleave across
+- :code:`interleave_granularity` - the granularity to interleave at.
+
+Linux expects the :code:`interleave_granularity` of switch decoders to be
+derived from their upstream port connections. In `Cross-Link First` interleave
+configurations, the :code:`interleave_granularity` of a decoder is equal to
+:code:`parent_interleave_granularity * parent_interleave_ways`.
+
+At Endpoint
+-----------
+`Endpoint Decoders` are programmed similar to Host Bridge and Switch decoders,
+with the exception that the ways and granularity are defined by the interleave
+set (e.g. the interleave settings defined by the associated `Memory Region`).
+
+- :code:`start` - the HPA region associated with the memory region
+- :code:`size` - the size of the region
+- :code:`interleave_ways` - the number endpoints in the interleave set
+- :code:`interleave_granularity` - the granularity to interleave at.
+
+Linux does not support unbalanced interleave configurations.  As a result, all
+endpoints in an interleave set must have the same ways and granularity.
 
 Example Configurations
 **********************
