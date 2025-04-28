@@ -18,14 +18,13 @@ be used to script interactions with these devices.
 
 Drivers
 *******
-todo: list of drivers and probe responsibilities
+The CXL driver is split into a number of drivers.
 
-* cxl_core
-* cxl_port
-* cxl_acpi
-* cxl_pmem
-* cxl_mem
-* cxl_pci
+* cxl_core  - fundamental init interface and core object creation
+* cxl_port  - initializes root and provides port enumeration interface.
+* cxl_acpi  - initializes root decoders and interacts with ACPI data.
+* cxl_p/mem - initializes memory devices
+* cxl_pci   - uses cxl_port to enumates the actual fabric hierarchy.
 
 Driver Devices
 **************
