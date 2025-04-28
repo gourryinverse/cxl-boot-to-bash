@@ -519,6 +519,9 @@ set (e.g. the interleave settings defined by the associated `Memory Region`).
 - :code:`interleave_ways` - the number endpoints in the interleave set
 - :code:`interleave_granularity` - the granularity to interleave at.
 
+These settings are used by endpoint decoders to *Translate* memory requests
+from HPA to DPA.  This is why they must be aware of the entire interleave set.
+
 Linux does not support unbalanced interleave configurations.  As a result, all
 endpoints in an interleave set must have the same ways and granularity.
 
