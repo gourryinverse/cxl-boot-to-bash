@@ -25,7 +25,7 @@ These dictate whether hotplugged memory blocks arrive in one of three states:
 
 1) Offline
 2) Online in :code:`ZONE_NORMAL`
-2) Online in :code:`ZONE_MOVABLE`
+3) Online in :code:`ZONE_MOVABLE`
 
 :code:`ZONE_NORMAL` implies this capacity may be used for almost any allocation,
 while :code:`ZONE_MOVABLE` implies this capacity should only be used for
