@@ -64,16 +64,5 @@ configurations into five main areas:
 Contributors
 ############
 
-Authors
-*******
-
 * Gregory Price
 * Joshua Hahn
-
-Editors
-*******
-todo
-
-Thanks
-******
-todo
