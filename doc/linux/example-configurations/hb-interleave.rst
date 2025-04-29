@@ -104,7 +104,7 @@ ports: :code:`dport1`, :code:`dport2`, and :code:`dport113`..
                                 "interleave_granularity":256,
                                 "region":"region0",
                                 "dpa_resource":0,
-                                "dpa_size":274877906944,
+                                "dpa_size":137438953472,
                                 "mode":"ram"
                             }
                         ]
@@ -182,7 +182,7 @@ the second host bridge with a memory device attached.
                                 "interleave_granularity":256,
                                 "region":"region0",
                                 "dpa_resource":0,
-                                "dpa_size":274877906944,
+                                "dpa_size":137438953472,
                                 "mode":"ram"
                             }
                         ]
@@ -194,7 +194,6 @@ the second host bridge with a memory device attached.
                         "resource":825975898112,
                         "size":274877906944,
                         "interleave_ways":1,
-                        "interleave_granularity":512,
                         "region":"region0",
                         "nr_targets":1,
                         "targets":[
