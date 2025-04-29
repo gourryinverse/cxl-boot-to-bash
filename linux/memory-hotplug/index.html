@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Hotplug &mdash; CXL: Boot To Bash  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=949a1ff5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=582ca9e2"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script data-domain="coderefinery.github.io" defer="defer" src="https://plausible.cs.aalto.fi/js/script.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="DAX Devices" href="../../allocation/dax/" />
+    <link rel="prev" title="DAX Driver Operation" href="../dax-driver/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            CXL: Boot To Bash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../">CXL on Linux: Boot To Bash</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Device Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/device-types/">Devices and Protocols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/uefi/">UEFI Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Platform Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/bios-and-efi/">BIOS/EFI Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/acpi/">ACPI Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/example-configs/">Example Platform Configurations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Linux Kernel Configuration:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../early-boot/">Linux Init (Early Boot)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxl-driver/">CXL Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dax-driver/">DAX Driver Operation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Memory Hotplug</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#default-online-behavior">Default Online Behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hotplug-memory-block-size">Hotplug Memory Block Size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-map">Memory Map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#driver-managed-memory">Driver Managed Memory</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Memory Allocation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/dax/">DAX Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/page-allocator/">The Page Allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/reclaim/">Reclaim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/hugepages/">Huge Pages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/tiering/">Memory Tiering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/memory-expansion/">Memory Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/dynamic-capacity/">Dynamic Capacity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/virtual-machines/">Virtual Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/shared-memory/">Shared Memory</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">CXL: Boot To Bash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Memory Hotplug</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gourryinverse/cxl-boot-to-bash/blob/main/doc/linux/memory-hotplug.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="memory-hotplug">
+<h1>Memory Hotplug<a class="headerlink" href="#memory-hotplug" title="Link to this heading"></a></h1>
+<p>The final phase of surfacing CXL memory to the kernel page allocator is for
+the <cite>DAX</cite> driver to surface a <cite>Driver Managed</cite> memory region via the
+memory-hotplug component.</p>
+<p>There are four major configurations to consider</p>
+<ol class="arabic simple">
+<li><p>Default Online Behavior (on/off and zone)</p></li>
+<li><p>Hotplug Memory Block size</p></li>
+<li><p>Memory Map Resource location</p></li>
+<li><p>Driver-Managed Memory Designation</p></li>
+</ol>
+<section id="default-online-behavior">
+<h2>Default Online Behavior<a class="headerlink" href="#default-online-behavior" title="Link to this heading"></a></h2>
+<p>The default-online behavior of hotplug memory is dictated by the following,
+in order of precedence:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">CONFIG_MHP_DEFAULT_ONLINE_TYPE</span></code> Build Configuration</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">memhp_default_state</span></code> Boot parameters</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">/sys/devices/system/memory/auto_online_blocks</span></code> value</p></li>
+</ul>
+<p>These dictate whether hotplugged memory blocks arrive in one of three states:</p>
+<ol class="arabic simple">
+<li><p>Offline</p></li>
+<li><p>Online in <code class="code docutils literal notranslate"><span class="pre">ZONE_NORMAL</span></code></p></li>
+<li><p>Online in <code class="code docutils literal notranslate"><span class="pre">ZONE_MOVABLE</span></code></p></li>
+</ol>
+<p><code class="code docutils literal notranslate"><span class="pre">ZONE_NORMAL</span></code> implies this capacity may be used for almost any allocation,
+while <code class="code docutils literal notranslate"><span class="pre">ZONE_MOVABLE</span></code> implies this capacity should only be used for
+migratable allocations.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">ZONE_MOVABLE</span></code> attempts to retain the hotplug-ability of a memory block
+so that it the entire region may be hot-unplugged at a later time.  Any capacity
+onlined into <code class="code docutils literal notranslate"><span class="pre">ZONE_NORMAL</span></code> should be considered permanently attached to
+the page allocator.</p>
+</section>
+<section id="hotplug-memory-block-size">
+<h2>Hotplug Memory Block Size<a class="headerlink" href="#hotplug-memory-block-size" title="Link to this heading"></a></h2>
+<p>By default, on most architectures, the Hotplug Memory Block Size is either
+128MB or 256MB.  On x86, the block size increases up to 2GB as total memory
+capacity exceeds 64GB.  As of v6.15, Linux does not take into account the
+size and alignment of the ACPI CEDT CFMWS regions (see Early Boot docs) when
+deciding the Hotplug Memory Block Size.</p>
+</section>
+<section id="memory-map">
+<h2>Memory Map<a class="headerlink" href="#memory-map" title="Link to this heading"></a></h2>
+<p>The location of <code class="code docutils literal notranslate"><span class="pre">struct</span> <span class="pre">folio</span></code> allocations to represent the hotplugged
+memory capacity are dicated by the following system settings:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">/sys_module/memory_hotplug/parameters/memmap_on_memory</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">/sys/bus/dax/devices/daxN.Y/memmap_on_memory</span></code></p></li>
+</ul>
+<p>If both of these parameters are set to true, <code class="code docutils literal notranslate"><span class="pre">struct</span> <span class="pre">folio</span></code> for this
+capacity will be carved out of the memory block being onlined.  This has
+performance implications if the memory is particularly high-latency and
+its <code class="code docutils literal notranslate"><span class="pre">struct</span> <span class="pre">folio</span></code> becomes hotly contended.</p>
+<p>If either parameter is set to false, <code class="code docutils literal notranslate"><span class="pre">struct</span> <span class="pre">folio</span></code> for this capacity
+will be allocated from the local node of the processor running the hotplug
+procedure.  This capacity will be allocated from <code class="code docutils literal notranslate"><span class="pre">ZONE_NORMAL</span></code> on
+that node, as it is a <code class="code docutils literal notranslate"><span class="pre">GFP_KERNEL</span></code> allocation.</p>
+<p>Systems with extremely large amounts of <code class="code docutils literal notranslate"><span class="pre">ZONE_MOVABLE</span></code> memory (e.g.
+CXL memory pools) must ensure that there is sufficient local
+<code class="code docutils literal notranslate"><span class="pre">ZONE_NORMAL</span></code> capacity to host the memory map for the hotplugged capacity.</p>
+</section>
+<section id="driver-managed-memory">
+<h2>Driver Managed Memory<a class="headerlink" href="#driver-managed-memory" title="Link to this heading"></a></h2>
+<p>The DAX driver surfaces this memory to memory-hotplug as “Driver Managed”. This
+is not a configurable setting, but it’s important to not that driver managed
+memory is explicitly excluded from use during kexec.  This is required to ensure
+any reset or out-of-band operations that the CXL device may be subject to during
+a functional system-reboot (such as a reset-on-probe) will not cause portions of
+the kexec kernel to be overwritten.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../dax-driver/" class="btn btn-neutral float-left" title="DAX Driver Operation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../allocation/dax/" class="btn btn-neutral float-right" title="DAX Devices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Gregory Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

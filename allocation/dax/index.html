@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DAX Devices &mdash; CXL: Boot To Bash  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=949a1ff5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=582ca9e2"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script data-domain="coderefinery.github.io" defer="defer" src="https://plausible.cs.aalto.fi/js/script.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="The Page Allocator" href="../page-allocator/" />
+    <link rel="prev" title="Memory Hotplug" href="../../linux/memory-hotplug/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            CXL: Boot To Bash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../">CXL on Linux: Boot To Bash</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Device Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/device-types/">Devices and Protocols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/uefi/">UEFI Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Platform Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/bios-and-efi/">BIOS/EFI Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/acpi/">ACPI Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/example-configs/">Example Platform Configurations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Linux Kernel Configuration:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/overview/">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/early-boot/">Linux Init (Early Boot)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/cxl-driver/">CXL Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/dax-driver/">DAX Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/memory-hotplug/">Memory Hotplug</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Memory Allocation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DAX Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../page-allocator/">The Page Allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reclaim/">Reclaim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hugepages/">Huge Pages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tiering/">Memory Tiering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/memory-expansion/">Memory Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/dynamic-capacity/">Dynamic Capacity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/virtual-machines/">Virtual Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/shared-memory/">Shared Memory</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">CXL: Boot To Bash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DAX Devices</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gourryinverse/cxl-boot-to-bash/blob/main/doc/allocation/dax.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dax-devices">
+<h1>DAX Devices<a class="headerlink" href="#dax-devices" title="Link to this heading"></a></h1>
+<p>CXL capacity exposed as a DAX device can be accessed directly via mmap.
+Users may wish to use this interface mechanism to write their own userland
+CXL allocator, or to managed shared or persistent memory regions across multiple
+hosts.</p>
+<p>If the capacity is shared across hosts or persistent, appropriate flushing
+mechanisms must be employed unless the region supports Snoop Back-Invalidate.</p>
+<p>Note that mappings must be aligned (size and base) to the dax device’s base
+alignment, which is typically 2MB - but maybe be configured larger.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;stdlib.h&gt;</span>
+<span class="c1">#include &lt;stdint.h&gt;</span>
+<span class="c1">#include &lt;sys/mman.h&gt;</span>
+<span class="c1">#include &lt;fcntl.h&gt;</span>
+<span class="c1">#include &lt;unistd.h&gt;</span>
+
+<span class="c1">#define DEVICE_PATH &quot;/dev/dax0.0&quot; // Replace DAX device path</span>
+<span class="c1">#define DEVICE_SIZE (4ULL * 1024 * 1024 * 1024) // 4GB</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nb">int</span> <span class="n">fd</span><span class="p">;</span>
+    <span class="n">void</span><span class="o">*</span> <span class="n">mapped_addr</span><span class="p">;</span>
+
+    <span class="o">/*</span> <span class="n">Open</span> <span class="n">the</span> <span class="n">DAX</span> <span class="n">device</span> <span class="o">*/</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">DEVICE_PATH</span><span class="p">,</span> <span class="n">O_RDWR</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s2">&quot;open&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">/*</span> <span class="n">Map</span> <span class="n">the</span> <span class="n">device</span> <span class="n">into</span> <span class="n">memory</span> <span class="o">*/</span>
+    <span class="n">mapped_addr</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="n">NULL</span><span class="p">,</span> <span class="n">DEVICE_SIZE</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
+                       <span class="n">MAP_SHARED</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mapped_addr</span> <span class="o">==</span> <span class="n">MAP_FAILED</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s2">&quot;mmap&quot;</span><span class="p">);</span>
+        <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Mapped address: %p</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mapped_addr</span><span class="p">);</span>
+
+    <span class="o">/*</span> <span class="n">You</span> <span class="n">can</span> <span class="n">now</span> <span class="n">access</span> <span class="n">the</span> <span class="n">device</span> <span class="n">through</span> <span class="n">the</span> <span class="n">mapped</span> <span class="n">address</span> <span class="o">*/</span>
+    <span class="n">uint64_t</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint64_t</span><span class="o">*</span><span class="p">)</span><span class="n">mapped_addr</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="mh">0x1234567890abcdef</span><span class="p">;</span> <span class="o">//</span> <span class="n">Write</span> <span class="n">a</span> <span class="n">value</span> <span class="n">to</span> <span class="n">the</span> <span class="n">device</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Value at address %p: 0x%016llx</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ptr</span><span class="p">,</span> <span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+
+    <span class="o">/*</span> <span class="n">Clean</span> <span class="n">up</span> <span class="o">*/</span>
+    <span class="n">munmap</span><span class="p">(</span><span class="n">mapped_addr</span><span class="p">,</span> <span class="n">DEVICE_SIZE</span><span class="p">);</span>
+    <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../linux/memory-hotplug/" class="btn btn-neutral float-left" title="Memory Hotplug" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../page-allocator/" class="btn btn-neutral float-right" title="The Page Allocator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Gregory Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

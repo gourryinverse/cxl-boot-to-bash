@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reclaim &mdash; CXL: Boot To Bash  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=949a1ff5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=582ca9e2"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script data-domain="coderefinery.github.io" defer="defer" src="https://plausible.cs.aalto.fi/js/script.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Huge Pages" href="../hugepages/" />
+    <link rel="prev" title="The Page Allocator" href="../page-allocator/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            CXL: Boot To Bash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../">CXL on Linux: Boot To Bash</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Device Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/device-types/">Devices and Protocols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/uefi/">UEFI Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Platform Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/bios-and-efi/">BIOS/EFI Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/acpi/">ACPI Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/example-configs/">Example Platform Configurations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Linux Kernel Configuration:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/overview/">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/early-boot/">Linux Init (Early Boot)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/cxl-driver/">CXL Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/dax-driver/">DAX Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/memory-hotplug/">Memory Hotplug</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Memory Allocation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dax/">DAX Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../page-allocator/">The Page Allocator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reclaim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#demotion">Demotion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cpusets-mems-allowed-quirk">cpusets.mems_allowed quirk</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#zswap-and-node-preference">ZSwap and Node Preference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#demotion-with-zswap">Demotion with ZSwap</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../hugepages/">Huge Pages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tiering/">Memory Tiering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/memory-expansion/">Memory Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/dynamic-capacity/">Dynamic Capacity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/virtual-machines/">Virtual Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/shared-memory/">Shared Memory</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">CXL: Boot To Bash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reclaim</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gourryinverse/cxl-boot-to-bash/blob/main/doc/allocation/reclaim.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reclaim">
+<h1>Reclaim<a class="headerlink" href="#reclaim" title="Link to this heading"></a></h1>
+<p>Another way CXL memory can be utilized <em>indirectly</em> is via the reclaim system
+in <code class="code docutils literal notranslate"><span class="pre">mm/vmscan.c</span></code>.  Reclaim is engaged when memory capacity on the system
+becomes pressured based on global and cgroup-local <cite>watermark</cite> settings.</p>
+<p>In this section we won’t discuss the <cite>watermark</cite> configurations, just how CXL
+memory can be consumed by various pieces of reclaim system.</p>
+<section id="demotion">
+<h2>Demotion<a class="headerlink" href="#demotion" title="Link to this heading"></a></h2>
+<p>By default, the reclaim system will prefer swap (or zswap) when reclaiming
+memory.  Enabling <code class="code docutils literal notranslate"><span class="pre">kernel/mm/numa/demotion_enabled</span></code> will cause vmscan
+to opportunistically prefer distant NUMA nodes to swap or zswap, if capacity
+is available.</p>
+<p>Demotion engages the <code class="code docutils literal notranslate"><span class="pre">mm/memory_tier.c</span></code> component to determine the
+next demotion node.  The next demotion node is based on the <code class="code docutils literal notranslate"><span class="pre">HMAT</span></code>
+or <code class="code docutils literal notranslate"><span class="pre">CDAT</span></code> performance data.</p>
+<section id="cpusets-mems-allowed-quirk">
+<h3>cpusets.mems_allowed quirk<a class="headerlink" href="#cpusets-mems-allowed-quirk" title="Link to this heading"></a></h3>
+<p>In Linux v6.15 and below, demotion does not respect <code class="code docutils literal notranslate"><span class="pre">cpusets.mems_allowed</span></code>
+when migrating pages.  As a result, if demotion is enabled, vmscan cannot
+guarantee isolation of a container’s memory from nodes not set in mems_allowed.</p>
+<p>In Linux v6.XX and up, demotion does attempt to respect
+<code class="code docutils literal notranslate"><span class="pre">cpusets.mems_allowed</span></code>; however, certain classes of shared memory
+originally instantiated by another cgroup (such as common libraries - e.g.
+libc) may still be demoted.  As a result, the mems_allowed interface still
+cannot provide perfect isolation from the remote nodes.</p>
+</section>
+</section>
+<section id="zswap-and-node-preference">
+<h2>ZSwap and Node Preference<a class="headerlink" href="#zswap-and-node-preference" title="Link to this heading"></a></h2>
+<p>In Linux v6.15 and below, ZSwap allocates memory from the local node of the
+processor for the new pages being compressed.  Since pages being compressed
+are typically cold, the result is a cold page becomes promoted - only to
+be later demoted as it ages off the LRU.</p>
+<p>In Linux v6.XX, ZSwap tries to prefer the node of the page being compressed
+as the allocation target for the compression page.  This helps prevernt
+thrashing.</p>
+</section>
+<section id="demotion-with-zswap">
+<h2>Demotion with ZSwap<a class="headerlink" href="#demotion-with-zswap" title="Link to this heading"></a></h2>
+<p>When enabling both Demotion and ZSwap, you create a situation where ZSwap
+will prefer the slowest form of CXL memory by default until that tier of
+memory is exausted.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../page-allocator/" class="btn btn-neutral float-left" title="The Page Allocator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../hugepages/" class="btn btn-neutral float-right" title="Huge Pages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Gregory Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

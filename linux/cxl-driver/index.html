@@ -1,0 +1,695 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CXL Driver Operation &mdash; CXL: Boot To Bash  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=949a1ff5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=582ca9e2"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script data-domain="coderefinery.github.io" defer="defer" src="https://plausible.cs.aalto.fi/js/script.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="CXL-CLI Reference" href="../cxl-cli/" />
+    <link rel="prev" title="Linux Init (Early Boot)" href="../early-boot/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            CXL: Boot To Bash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../">CXL on Linux: Boot To Bash</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Device Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/device-types/">Devices and Protocols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/uefi/">UEFI Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Platform Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/bios-and-efi/">BIOS/EFI Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/acpi/">ACPI Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/example-configs/">Example Platform Configurations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Linux Kernel Configuration:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../early-boot/">Linux Init (Early Boot)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CXL Driver Operation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxl-cli/">CXL-CLI Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#drivers">Drivers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#driver-devices">Driver Devices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-devices">Base Devices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#root">Root</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#port">Port</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#endpoint">Endpoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#memory-device-memdev">Memory Device (memdev)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#decoders">Decoders</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#root-decoder">Root Decoder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#switch-decoder">Switch Decoder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#endpoint-decoder">Endpoint Decoder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#regions">Regions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#memory-region">Memory Region</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dax-region">DAX Region</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mailbox-interfaces">Mailbox Interfaces</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#decoder-programming">Decoder Programming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-programming">Runtime Programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auto-decoders">Auto Decoders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interleave">Interleave</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#at-root">At Root</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#at-host-bridge-or-switch">At Host Bridge or Switch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#at-endpoint">At Endpoint</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-configurations">Example Configurations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../example-configurations/single-device/">Single Device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../example-configurations/hb-interleave/">Inter-Host-Bridge Interleave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../example-configurations/intra-hb-interleave/">Intra-Host-Bridge Interleave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../example-configurations/multi-interleave/">Multi-Level Interleave</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dax-driver/">DAX Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../memory-hotplug/">Memory Hotplug</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Memory Allocation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/dax/">DAX Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/page-allocator/">The Page Allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/reclaim/">Reclaim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/hugepages/">Huge Pages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/tiering/">Memory Tiering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/memory-expansion/">Memory Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/dynamic-capacity/">Dynamic Capacity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/virtual-machines/">Virtual Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/shared-memory/">Shared Memory</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">CXL: Boot To Bash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CXL Driver Operation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gourryinverse/cxl-boot-to-bash/blob/main/doc/linux/cxl-driver.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cxl-driver-operation">
+<h1>CXL Driver Operation<a class="headerlink" href="#cxl-driver-operation" title="Link to this heading"></a></h1>
+<p>The devices described in this section are present in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">bus</span><span class="o">/</span><span class="n">cxl</span><span class="o">/</span><span class="n">devices</span><span class="o">/</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">cxl</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>The <code class="code docutils literal notranslate"><span class="pre">cxl-cli</span></code> library, maintained as part of the NDTCL project, may
+be used to script interactions with these devices.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cxl-cli/">CXL-CLI Reference</a></li>
+</ul>
+</div>
+<section id="drivers">
+<h2>Drivers<a class="headerlink" href="#drivers" title="Link to this heading"></a></h2>
+<p>The CXL driver is split into a number of drivers.</p>
+<ul class="simple">
+<li><p>cxl_core  - fundamental init interface and core object creation</p></li>
+<li><p>cxl_port  - initializes root and provides port enumeration interface.</p></li>
+<li><p>cxl_acpi  - initializes root decoders and interacts with ACPI data.</p></li>
+<li><p>cxl_p/mem - initializes memory devices</p></li>
+<li><p>cxl_pci   - uses cxl_port to enumates the actual fabric hierarchy.</p></li>
+</ul>
+</section>
+<section id="driver-devices">
+<h2>Driver Devices<a class="headerlink" href="#driver-devices" title="Link to this heading"></a></h2>
+<p>Here is an example from a single-socket system with 4 host bridges. Two host
+bridges have a single memory device attached, and the devices are interleaved
+into a single memory region. The memory region has been converted to dax.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/</span>
+  <span class="n">dax_region0</span>  <span class="n">decoder3</span><span class="mf">.0</span>  <span class="n">decoder6</span><span class="mf">.0</span>  <span class="n">mem0</span>   <span class="n">port3</span>
+  <span class="n">decoder0</span><span class="mf">.0</span>   <span class="n">decoder4</span><span class="mf">.0</span>  <span class="n">decoder6</span><span class="mf">.1</span>  <span class="n">mem1</span>   <span class="n">port4</span>
+  <span class="n">decoder1</span><span class="mf">.0</span>   <span class="n">decoder5</span><span class="mf">.0</span>  <span class="n">endpoint5</span>   <span class="n">port1</span>  <span class="n">region0</span>
+  <span class="n">decoder2</span><span class="mf">.0</span>   <span class="n">decoder5</span><span class="mf">.1</span>  <span class="n">endpoint6</span>   <span class="n">port2</span>  <span class="n">root0</span>
+</pre></div>
+</div>
+<p>For this section we’ll explore the devices present in this configuration, but
+we’ll explore more configurations in-depth in example configurations below.</p>
+<section id="base-devices">
+<h3>Base Devices<a class="headerlink" href="#base-devices" title="Link to this heading"></a></h3>
+<p>Most devices in a CXL fabric are a <cite>port</cite> of some kind (because each
+device mostly routes request from one device to the next, rather than
+provide a manageable service).</p>
+<section id="root">
+<h4>Root<a class="headerlink" href="#root" title="Link to this heading"></a></h4>
+<p>The <cite>CXL Root</cite> is logical object created by the <cite>cxl_acpi</cite> driver during
+<code class="code docutils literal notranslate"><span class="pre">cxl_acpi_probe</span></code> - if the <code class="code docutils literal notranslate"><span class="pre">ACPI0017</span></code> <cite>Compute Express Link
+Root Object</cite> Device Class is found.</p>
+<p>The Root contains links to:</p>
+<ul class="simple">
+<li><p><cite>Host Bridge Ports</cite> defined by ACPI CEDT CHBS.</p></li>
+<li><p><cite>Root Decoders</cite> defined by ACPI CEDT CFMWS.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/root0</span>
+  <span class="n">decoder0</span><span class="mf">.0</span>          <span class="n">dport0</span>  <span class="n">dport5</span>    <span class="n">port2</span>  <span class="n">subsystem</span>
+  <span class="n">decoders_committed</span>  <span class="n">dport1</span>  <span class="n">modalias</span>  <span class="n">port3</span>  <span class="n">uevent</span>
+  <span class="n">devtype</span>             <span class="n">dport4</span>  <span class="n">port1</span>     <span class="n">port4</span>  <span class="n">uport</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/root0/devtype</span>
+  <span class="n">cxl_port</span>
+
+<span class="c1"># cat port1/devtype</span>
+  <span class="n">cxl_port</span>
+
+<span class="c1"># cat decoder0.0/devtype</span>
+  <span class="n">cxl_decoder_root</span>
+</pre></div>
+</div>
+<p>The root is first <cite>logical port</cite> in the CXL fabric, as presented by the Linux
+CXL driver.  The <cite>CXL root</cite> is a special type of <cite>switch port</cite>, in that it
+only has downstream port connections.</p>
+</section>
+<section id="port">
+<h4>Port<a class="headerlink" href="#port" title="Link to this heading"></a></h4>
+<p>A <cite>port</cite> object is better described as a <cite>switch port</cite>.  It may represent a
+host bridge to the root or an actual switch port on a switch. A <cite>switch port</cite>
+contains one or more decoders used to route memory requests downstream ports,
+which may be connected to another <cite>switch port</cite> or an <cite>endpoint port</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/port1</span>
+  <span class="n">decoder1</span><span class="mf">.0</span>          <span class="n">dport0</span>    <span class="n">driver</span>     <span class="n">parent_dport</span>  <span class="n">uport</span>
+  <span class="n">decoders_committed</span>  <span class="n">dport113</span>  <span class="n">endpoint5</span>  <span class="n">subsystem</span>
+  <span class="n">devtype</span>             <span class="n">dport2</span>    <span class="n">modalias</span>   <span class="n">uevent</span>
+
+<span class="c1"># cat devtype</span>
+  <span class="n">cxl_port</span>
+
+<span class="c1"># cat decoder1.0/devtype</span>
+  <span class="n">cxl_decoder_switch</span>
+
+<span class="c1"># cat endpoint5/devtype</span>
+  <span class="n">cxl_port</span>
+</pre></div>
+</div>
+<p>CXL <cite>Host Bridges</cite> in the fabric are probed during <code class="code docutils literal notranslate"><span class="pre">cxl_acpi_probe</span></code> at
+the time the <cite>CXL Root</cite> is probed.  The allows for the immediate logical
+connection to between between the root and host bridge.</p>
+<ul class="simple">
+<li><p>The root has a downstream port connection to a host bridge</p></li>
+<li><p>The host bridge has an upstream port connection to the root.</p></li>
+<li><p>The host bridge has one or more downstream port connections to switch
+or endpoint ports.</p></li>
+</ul>
+<p>A <cite>Host Bridge</cite> is a special type of CXL <cite>switch port</cite>. It is explicitly
+defined in the ACPI specification via <cite>ACPI0016</cite> ID.  <cite>Host Bridge</cite> ports
+will be probed at <cite>acpi_probe</cite> time, while similar ports on an actual switch
+will be probed later.  Otherwise, switch and host bridge ports look very
+similar - the both contain switch decoders which route accesses between
+upstream and downstream ports.</p>
+</section>
+<section id="endpoint">
+<h4>Endpoint<a class="headerlink" href="#endpoint" title="Link to this heading"></a></h4>
+<p>An <cite>endpoint</cite> is a terminal port in the fabric.  This is a <cite>logical device</cite>,
+and may be one of many <cite>logical devices</cite> presented by a memory device. It
+is still considered a type of <cite>port</cite> in the fabric.</p>
+<p>An <cite>endpoint</cite> contains <cite>endpoint decoders</cite> available for use and the
+<em>Coherent Device Attribute Table</em> (CDAT) used to describe the capabilities
+of the device.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/endpoint5</span>
+  <span class="n">CDAT</span>        <span class="n">decoders_committed</span>  <span class="n">modalias</span>      <span class="n">uevent</span>
+  <span class="n">decoder5</span><span class="mf">.0</span>  <span class="n">devtype</span>             <span class="n">parent_dport</span>  <span class="n">uport</span>
+  <span class="n">decoder5</span><span class="mf">.1</span>  <span class="n">driver</span>              <span class="n">subsystem</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/endpoint5/devtype</span>
+  <span class="n">cxl_port</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/endpoint5/decoder5.0/devtype</span>
+  <span class="n">cxl_decoder_endpoint</span>
+</pre></div>
+</div>
+</section>
+<section id="memory-device-memdev">
+<h4>Memory Device (memdev)<a class="headerlink" href="#memory-device-memdev" title="Link to this heading"></a></h4>
+<p>A <cite>memdev</cite> is probed and added by the <cite>cxl_pci</cite> driver in <code class="code docutils literal notranslate"><span class="pre">cxl_pci_probe</span></code>
+and is managed by the <cite>cxl_mem</cite> driver. It primarily provides the <cite>IOCTL</cite>
+interface to a memory device, via <code class="code docutils literal notranslate"><span class="pre">/dev/cxl/memN</span></code>, and exposes various
+device configuration data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/mem0</span>
+  <span class="n">dev</span>       <span class="n">firmware_version</span>    <span class="n">payload_max</span>  <span class="n">security</span>   <span class="n">uevent</span>
+  <span class="n">driver</span>    <span class="n">label_storage_size</span>  <span class="n">pmem</span>         <span class="n">serial</span>
+  <span class="n">firmware</span>  <span class="n">numa_node</span>           <span class="n">ram</span>          <span class="n">subsystem</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="decoders">
+<h3>Decoders<a class="headerlink" href="#decoders" title="Link to this heading"></a></h3>
+<p>A <cite>Decoder</cite> is short for a CXL Host-Managed Device Memory (HDM) Decoder. It is
+a device that routes accesses through the CXL fabric to an endpoint, and at
+the endpoint translates a <cite>Host Physical</cite> to <cite>Device Physical</cite> Addressing.</p>
+<p>The CXL 3.1 specification heavily implies that only endpoint decoders should
+engage in translation of <cite>Host Physical Address</cite> to <cite>Device Physical Address</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">8.2.4.20</span> <span class="n">CXL</span> <span class="n">HDM</span> <span class="n">Decoder</span> <span class="n">Capability</span> <span class="n">Structure</span>
+
+<span class="n">IMPLEMENTATION</span> <span class="n">NOTE</span>
+<span class="n">CXL</span> <span class="n">Host</span> <span class="n">Bridge</span> <span class="ow">and</span> <span class="n">Upstream</span> <span class="n">Switch</span> <span class="n">Port</span> <span class="n">Decode</span> <span class="n">Flow</span>
+
+<span class="n">IMPLEMENTATION</span> <span class="n">NOTE</span>
+<span class="n">Device</span> <span class="n">Decode</span> <span class="n">Logic</span>
+</pre></div>
+</div>
+<p>These notes imply that there are two logical groups of decoders.</p>
+<ul class="simple">
+<li><p>Routing Decoder - a decoder which routes accesses but does not translate
+addresses from HPA to DPA.</p></li>
+<li><p>Translating Decoder - a decoder which translates accesses from HPA to DPA
+for an endpoint to service.</p></li>
+</ul>
+<p>The CXL drivers distinguish 3 decoder types: root, switch, and endpoint. Only
+endpoint decoders are Translating Decoders, all others are Routing Decoders.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PLATFORM VENDORS BE AWARE</p>
+<p>Linux makes a strong assumption that endpoint decoders are the only decoder
+in the fabric that actively translates HPA to DPA.  Linux assumes routing
+decoders pass the HPA unchanged to the next decoder in the fabric.</p>
+<p>It is therefore assumed that any given decoder in the fabric will have an
+address range that is a subset of its upstream port decoder. Any deviation
+from this scheme undefined per the specification.  Linux prioritizes
+spec-defined / architectural behavior.</p>
+</div>
+<p>Decoders may have one or more <cite>Downstream Targets</cite> if configured to interleave
+memory accesses.  This will be presented in sysfs via the <code class="code docutils literal notranslate"><span class="pre">target_list</span></code>
+parameter.</p>
+<section id="root-decoder">
+<h4>Root Decoder<a class="headerlink" href="#root-decoder" title="Link to this heading"></a></h4>
+<p>A <cite>Root Decoder</cite> is logical construct of the physical address and interleave
+configurations present in the ACPI CEDT CFMWS.  Linux presents this information
+as a decoder present in the <cite>CXL Root</cite>.  We consider this a <cite>Root Decoder</cite>,
+though technically it exists on the boundary of the CXL specification and
+platform-specific CXL root implementations.</p>
+<p>Linux considers these logical decoders a type of <cite>Routing Decoder</cite>, and is the
+first decoder in the CXL fabric to recieve a memory access from the platform’s
+memory controllers.</p>
+<p><cite>Root Decoders</cite> are created during <code class="code docutils literal notranslate"><span class="pre">cxl_acpi_probe</span></code>.  One root decoder
+is created per CFMWS entry in the ACPI CEDT.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">target_list</span></code> parameter is filled by the CFMWS target fields. Targets
+of a root decoder are <cite>Host Bridges</cite>, which means interleave done at the root
+decoder level is an <cite>Inter-Host-Bridge Interleave</cite>.</p>
+<p>Only root decoders are capable of <cite>Inter-Host-Bridge Interleave</cite>.</p>
+<p>Such interleaves must be configured by the platform and described in the ACPI
+CEDT CFMWS, as the target CXL host bridge UIDs in the CFMWS must match the CXL
+host bridge UIDs in the ACPI CEDT CHBS and ACPI DSDT.</p>
+<p>Interleave settings in a rootdecoder describe how to interleave accesses among
+the <em>immediate downstream targets</em>, not the entire interleave set.</p>
+<p>The memory range described in the root decoder is used to</p>
+<ol class="arabic simple">
+<li><p>Create a memory region (<code class="code docutils literal notranslate"><span class="pre">region0</span></code> in this example), and</p></li>
+<li><p>Associate the region with an IO Memory Resource (<code class="code docutils literal notranslate"><span class="pre">kernel/resource.c</span></code>)</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/decoder0.0/</span>
+  <span class="n">cap_pmem</span>           <span class="n">devtype</span>                 <span class="n">region0</span>
+  <span class="n">cap_ram</span>            <span class="n">interleave_granularity</span>  <span class="n">size</span>
+  <span class="n">cap_type2</span>          <span class="n">interleave_ways</span>         <span class="n">start</span>
+  <span class="n">cap_type3</span>          <span class="n">locked</span>                  <span class="n">subsystem</span>
+  <span class="n">create_ram_region</span>  <span class="n">modalias</span>                <span class="n">target_list</span>
+  <span class="n">delete_region</span>      <span class="n">qos_class</span>               <span class="n">uevent</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder0.0/region0/resource</span>
+  <span class="mh">0xc050000000</span>
+</pre></div>
+</div>
+<p>The IO Memory Resource is created during early boot when the CFMWS region is
+identified in the EFI Memory Map or E820 table (on x86).</p>
+<p>Root decoders are defined as a separate devtype, but are also a type
+of <cite>Switch Decoder</cite> due to having downstream targets.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat /sys/bus/cxl/devices/decoder0.0/devtype</span>
+  <span class="n">cxl_decoder_root</span>
+</pre></div>
+</div>
+</section>
+<section id="switch-decoder">
+<h4>Switch Decoder<a class="headerlink" href="#switch-decoder" title="Link to this heading"></a></h4>
+<p>Any non-root, translating decoder is considered a <cite>Switch Decoder</cite>, and will
+present with the type <code class="code docutils literal notranslate"><span class="pre">cxl_decoder_switch</span></code>. Both <cite>Host Bridge</cite> and <cite>CXL
+Switch</cite> (device) decoders are of type <code class="code docutils literal notranslate"><span class="pre">cxl_decoder_switch</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/decoder1.0/</span>
+  <span class="n">devtype</span>                 <span class="n">locked</span>    <span class="n">size</span>       <span class="n">target_list</span>
+  <span class="n">interleave_granularity</span>  <span class="n">modalias</span>  <span class="n">start</span>      <span class="n">target_type</span>
+  <span class="n">interleave_ways</span>         <span class="n">region</span>    <span class="n">subsystem</span>  <span class="n">uevent</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder1.0/devtype</span>
+  <span class="n">cxl_decoder_switch</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder1.0/region</span>
+  <span class="n">region0</span>
+</pre></div>
+</div>
+<p>A <cite>Switch Decoder</cite> has associations between a region defined by a root
+decoder and downstream target ports.  Interleaving done within a switch decoder
+is a multi-downstream-port interleave (or <cite>Intra-Host-Bridge Interleave</cite> for
+host bridges).</p>
+<p>Interleave settings in a switch decoder describe how to interleave accesses
+among the <em>immediate downstream targets</em>, not the entire interleave set.</p>
+<p>Switch decoders are created during <code class="code docutils literal notranslate"><span class="pre">cxl_switch_port_probe</span></code> in the
+<code class="code docutils literal notranslate"><span class="pre">cxl_port</span></code> driver, and is created based on a PCI device’s DVSEC
+registers.</p>
+<p>Switch decoder programming is validated during probe if the platform programs
+them during boot (See <cite>Auto Decoders</cite> below), or on commit if programmed at
+runtime (See <cite>Runtime Programming</cite> below).</p>
+</section>
+<section id="endpoint-decoder">
+<h4>Endpoint Decoder<a class="headerlink" href="#endpoint-decoder" title="Link to this heading"></a></h4>
+<p>Any decoder attached to a <em>terminal</em> point in the CXL fabric (<cite>An Endpoint</cite>) is
+considered an <cite>Endpoint Decoder</cite>. Endpoint decoders are of type
+<code class="code docutils literal notranslate"><span class="pre">cxl_decoder_endpoint</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/decoder5.0</span>
+  <span class="n">devtype</span>                 <span class="n">locked</span>    <span class="n">start</span>
+  <span class="n">dpa_resource</span>            <span class="n">modalias</span>  <span class="n">subsystem</span>
+  <span class="n">dpa_size</span>                <span class="n">mode</span>      <span class="n">target_type</span>
+  <span class="n">interleave_granularity</span>  <span class="n">region</span>    <span class="n">uevent</span>
+  <span class="n">interleave_ways</span>         <span class="n">size</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder5.0/devtype</span>
+  <span class="n">cxl_decoder_endpoint</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder5.0/region</span>
+  <span class="n">region0</span>
+</pre></div>
+</div>
+<p>An <cite>Endpoint Decoder</cite> has an association with a region defined by a root
+decoder and describes the device-local resource associated with this region.</p>
+<p>Unlike root and switch decoders, endpoint decoders translate <cite>Host Physical</cite> to
+<cite>Device Physical</cite> address ranges.  The interleave settings on an endpoint
+therefore describe the entire <em>interleave set</em>.</p>
+<p><cite>Device Physical Address</cite> regions must be committed in-order. For example, the
+DPA region starting at 0x80000000 cannot be committed before the DPA region
+starting at 0x0.</p>
+<p>As of Linux v6.15, Linux does not support <em>imbalanced</em> interleave setups, all
+endpoints in an interleave set are are expected to have the same interleave
+settings (granularity and ways must be the same).</p>
+<p>Endpoint decoders are created during <code class="code docutils literal notranslate"><span class="pre">cxl_endpoint_port_probe</span></code> in the
+<code class="code docutils literal notranslate"><span class="pre">cxl_port</span></code> driver, and is created based on a PCI device’s DVSEC registers.</p>
+</section>
+</section>
+<section id="regions">
+<h3>Regions<a class="headerlink" href="#regions" title="Link to this heading"></a></h3>
+<section id="memory-region">
+<h4>Memory Region<a class="headerlink" href="#memory-region" title="Link to this heading"></a></h4>
+<p>A <cite>Memory Region</cite> is a logical construct that connects a set of CXL ports in
+the fabric to an IO Memory Resource.  It is ultimately used to expose the memory
+on these devices to the DAX subsystem via a <cite>DAX Region</cite>.</p>
+<p>An example RAM region:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/region0/</span>
+  <span class="n">access0</span>      <span class="n">devtype</span>                 <span class="n">modalias</span>  <span class="n">subsystem</span>  <span class="n">uuid</span>
+  <span class="n">access1</span>      <span class="n">driver</span>                  <span class="n">mode</span>      <span class="n">target0</span>
+  <span class="n">commit</span>       <span class="n">interleave_granularity</span>  <span class="n">resource</span>  <span class="n">target1</span>
+  <span class="n">dax_region0</span>  <span class="n">interleave_ways</span>         <span class="n">size</span>      <span class="n">uevent</span>
+</pre></div>
+</div>
+<p>A memory region can be constructed during endpoint probe, if decoders were
+programmed by BIOS/EFI (see <cite>Auto Decoders</cite>), or by creating a region manually
+via a <cite>Root Decoder</cite>’s <code class="code docutils literal notranslate"><span class="pre">create_ram_region</span></code> or <code class="code docutils literal notranslate"><span class="pre">create_pmem_region</span></code>
+interfaces.</p>
+<p>The interleave settings in a <cite>Memory Region</cite> describe the configuration of the
+<cite>Interleave Set</cite> - and are what can be expected to be seen in the endpoint
+interleave settings.</p>
+</section>
+<section id="dax-region">
+<h4>DAX Region<a class="headerlink" href="#dax-region" title="Link to this heading"></a></h4>
+<p>A <cite>DAX Region</cite> is used to convert a CXL <cite>Memory Region</cite> to a DAX device. A
+DAX device may then be accessed directly via a file descriptor interface, or
+converted to System RAM via the DAX kmem driver.  See the DAX driver section
+for more details.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/dax_region0/</span>
+  <span class="n">dax0</span><span class="mf">.0</span>      <span class="n">devtype</span>  <span class="n">modalias</span>   <span class="n">uevent</span>
+  <span class="n">dax_region</span>  <span class="n">driver</span>   <span class="n">subsystem</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mailbox-interfaces">
+<h3>Mailbox Interfaces<a class="headerlink" href="#mailbox-interfaces" title="Link to this heading"></a></h3>
+<p>A mailbox command interface for each device is exposed in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">cxl</span><span class="o">/</span><span class="n">mem0</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">cxl</span><span class="o">/</span><span class="n">mem1</span>
+</pre></div>
+</div>
+<p>These mailboxes may receive any specification-defined command. Raw commands
+(custom commands) can only be sent to these interfaces if the build config
+<code class="code docutils literal notranslate"><span class="pre">CXL_MEM_RAW_COMMANDS</span></code> is set.  This is considered a debug and/or
+development interface, not an officially supported mechanism for creation
+of vendor-specific commands (see the <cite>fwctl</cite> subsystem for that).</p>
+</section>
+</section>
+<section id="decoder-programming">
+<h2>Decoder Programming<a class="headerlink" href="#decoder-programming" title="Link to this heading"></a></h2>
+<section id="runtime-programming">
+<h3>Runtime Programming<a class="headerlink" href="#runtime-programming" title="Link to this heading"></a></h3>
+<p>During probe, the only decoders <em>required</em> to be programmed are <cite>Root Decoders</cite>.
+In reality, <cite>Root Decoders</cite> are a logical construct to describe the memory
+region and interleave configuration at the host bridge level - as described
+in the ACPI CEDT CFMWS.</p>
+<p>All other <cite>Switch</cite> and <cite>Endpoint</cite> decoders may be programmed by the user
+at runtime - if the platform supports such configurations.</p>
+<p>This interaction is what creates a <cite>Software Defined Memory</cite> environment.</p>
+<p>See the <code class="code docutils literal notranslate"><span class="pre">cxl-cli</span></code> documentation for more information about how to
+configure CXL decoders at runtime.</p>
+</section>
+<section id="auto-decoders">
+<h3>Auto Decoders<a class="headerlink" href="#auto-decoders" title="Link to this heading"></a></h3>
+<p>Auto Decoders are decoders programmed by BIOS/EFI at boot time, and are
+almost always locked (cannot be changed).  This is done by a platform
+which may have a static configuration - or certain quirks which may prevent
+dynamic runtime changes to the decoders (such as requiring additional
+controller programming within the CPU complex outside the scope of CXL).</p>
+<p>Auto Decoders are probed automatically as long as the devices and memory
+regions they are associated with probe without issue.  When probing Auto
+Decoders, the driver’s primary responsibility is to ensure the fabric is
+sane - as-if validating runtime programmed regions and decoders.</p>
+<p>If Linux cannot validate auto-decoder configuration, the memory will not
+be surfaced as a DAX device - and therefore not be exposed to the page
+allocator - effectively stranding it.</p>
+</section>
+<section id="interleave">
+<h3>Interleave<a class="headerlink" href="#interleave" title="Link to this heading"></a></h3>
+<p>The Linux CXL driver supports <cite>Cross-Link First</cite> interleave. This dictates
+how interleave is programmed at each decoder step, as the driver validates
+the relationships between a decoder and it’s parent.</p>
+<p>For example, in a <cite>Cross-Link First</cite> interleave setup with 16 endpoints
+attached to 4 host bridges, linux expects the following ways/granularity
+across the root, host bridge, and endpoints respectively.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 <span class="n">ways</span>   <span class="n">granularity</span>
+<span class="n">root</span>              <span class="mi">4</span>        <span class="mi">256</span>
+<span class="n">host</span> <span class="n">bridge</span>       <span class="mi">4</span>       <span class="mi">1024</span>
+<span class="n">endpoint</span>         <span class="mi">16</span>        <span class="mi">256</span>
+</pre></div>
+</div>
+<p>At the root, every a given access will be routed to the
+<code class="code docutils literal notranslate"><span class="pre">((HPA</span> <span class="pre">/</span> <span class="pre">256)</span> <span class="pre">%</span> <span class="pre">4)th</span></code> target host bridge. Within a host bridge, every
+<code class="code docutils literal notranslate"><span class="pre">((HPA</span> <span class="pre">/</span> <span class="pre">1024)</span> <span class="pre">%</span> <span class="pre">4)th</span></code> target endpoint.  Each endpoint will translate
+the access based on the entire 16 device interleave set.</p>
+<p>Unbalanced interleave sets are not supported - decoders at a similar point
+in the hierarchy (e.g. all host bridge decoders) must have the same ways and
+granularity configuration.</p>
+<section id="at-root">
+<h4>At Root<a class="headerlink" href="#at-root" title="Link to this heading"></a></h4>
+<p>Root decoder interleave is defined by the ACPI CEDT CFMWS.  The CEDT
+may actually define multiple CFMWS configurations to describe the same
+physical capacity - with the intent to allow users to decide at runtime
+whether to online memory as interleaved or non-interleaved.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>           <span class="n">Subtable</span> <span class="n">Type</span> <span class="p">:</span> <span class="mi">01</span> <span class="p">[</span><span class="n">CXL</span> <span class="n">Fixed</span> <span class="n">Memory</span> <span class="n">Window</span> <span class="n">Structure</span><span class="p">]</span>
+     <span class="n">Window</span> <span class="n">base</span> <span class="n">address</span> <span class="p">:</span> <span class="mi">0000000100000000</span>
+             <span class="n">Window</span> <span class="n">size</span> <span class="p">:</span> <span class="mi">0000000100000000</span>
+<span class="n">Interleave</span> <span class="n">Members</span> <span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="n">n</span><span class="p">)</span> <span class="p">:</span> <span class="mi">00</span>
+   <span class="n">Interleave</span> <span class="n">Arithmetic</span> <span class="p">:</span> <span class="mi">00</span>
+            <span class="n">First</span> <span class="n">Target</span> <span class="p">:</span> <span class="mi">00000007</span>
+
+           <span class="n">Subtable</span> <span class="n">Type</span> <span class="p">:</span> <span class="mi">01</span> <span class="p">[</span><span class="n">CXL</span> <span class="n">Fixed</span> <span class="n">Memory</span> <span class="n">Window</span> <span class="n">Structure</span><span class="p">]</span>
+     <span class="n">Window</span> <span class="n">base</span> <span class="n">address</span> <span class="p">:</span> <span class="mi">0000000200000000</span>
+             <span class="n">Window</span> <span class="n">size</span> <span class="p">:</span> <span class="mi">0000000100000000</span>
+<span class="n">Interleave</span> <span class="n">Members</span> <span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="n">n</span><span class="p">)</span> <span class="p">:</span> <span class="mi">00</span>
+   <span class="n">Interleave</span> <span class="n">Arithmetic</span> <span class="p">:</span> <span class="mi">00</span>
+            <span class="n">First</span> <span class="n">Target</span> <span class="p">:</span> <span class="mi">00000006</span>
+
+           <span class="n">Subtable</span> <span class="n">Type</span> <span class="p">:</span> <span class="mi">01</span> <span class="p">[</span><span class="n">CXL</span> <span class="n">Fixed</span> <span class="n">Memory</span> <span class="n">Window</span> <span class="n">Structure</span><span class="p">]</span>
+     <span class="n">Window</span> <span class="n">base</span> <span class="n">address</span> <span class="p">:</span> <span class="mi">0000000300000000</span>
+             <span class="n">Window</span> <span class="n">size</span> <span class="p">:</span> <span class="mi">0000000200000000</span>
+<span class="n">Interleave</span> <span class="n">Members</span> <span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="n">n</span><span class="p">)</span> <span class="p">:</span> <span class="mi">01</span>
+   <span class="n">Interleave</span> <span class="n">Arithmetic</span> <span class="p">:</span> <span class="mi">00</span>
+            <span class="n">First</span> <span class="n">Target</span> <span class="p">:</span> <span class="mi">00000007</span>
+             <span class="n">Next</span> <span class="n">Target</span> <span class="p">:</span> <span class="mi">00000006</span>
+</pre></div>
+</div>
+<p>In this example, the CFMWS defines two discrete non-interleaved 4GB regions
+for each host bridge, and one interleaved 8GB region that targets both. This
+would result in 3 root decoders presenting in the root.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ls /sys/bus/cxl/devices/root0</span>
+  <span class="n">decoder0</span><span class="mf">.0</span>  <span class="n">decoder0</span><span class="mf">.1</span>  <span class="n">decoder0</span><span class="mf">.2</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder0.0/target_list start size</span>
+  <span class="mi">7</span>
+  <span class="mh">0x100000000</span>
+  <span class="mh">0x100000000</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder0.1/target_list start size</span>
+  <span class="mi">6</span>
+  <span class="mh">0x200000000</span>
+  <span class="mh">0x100000000</span>
+
+<span class="c1"># cat /sys/bus/cxl/devices/decoder0.2/target_list start size</span>
+  <span class="mi">7</span><span class="p">,</span><span class="mi">6</span>
+  <span class="mh">0x300000000</span>
+  <span class="mh">0x200000000</span>
+</pre></div>
+</div>
+<p>These decoders are not runtime programmable.  They are used to generate a
+<cite>Memory Region</cite> to bring this memory online with runtime programmed settings
+at the <cite>Switch</cite> and <cite>Endpoint</cite> decoders.</p>
+</section>
+<section id="at-host-bridge-or-switch">
+<h4>At Host Bridge or Switch<a class="headerlink" href="#at-host-bridge-or-switch" title="Link to this heading"></a></h4>
+<p><cite>Host Bridge</cite> and <cite>Switch</cite> decoders are programmable via the following fields:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">start</span></code> - the HPA region associated with the memory region</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">size</span></code> - the size of the region</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">target_list</span></code> - the list of downstream ports</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">interleave_ways</span></code> - the number downstream ports to interleave across</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">interleave_granularity</span></code> - the granularity to interleave at.</p></li>
+</ul>
+<p>Linux expects the <code class="code docutils literal notranslate"><span class="pre">interleave_granularity</span></code> of switch decoders to be
+derived from their upstream port connections. In <cite>Cross-Link First</cite> interleave
+configurations, the <code class="code docutils literal notranslate"><span class="pre">interleave_granularity</span></code> of a decoder is equal to
+<code class="code docutils literal notranslate"><span class="pre">parent_interleave_granularity</span> <span class="pre">*</span> <span class="pre">parent_interleave_ways</span></code>.</p>
+</section>
+<section id="at-endpoint">
+<h4>At Endpoint<a class="headerlink" href="#at-endpoint" title="Link to this heading"></a></h4>
+<p><cite>Endpoint Decoders</cite> are programmed similar to Host Bridge and Switch decoders,
+with the exception that the ways and granularity are defined by the interleave
+set (e.g. the interleave settings defined by the associated <cite>Memory Region</cite>).</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">start</span></code> - the HPA region associated with the memory region</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">size</span></code> - the size of the region</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">interleave_ways</span></code> - the number endpoints in the interleave set</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">interleave_granularity</span></code> - the granularity to interleave at.</p></li>
+</ul>
+<p>These settings are used by endpoint decoders to <em>Translate</em> memory requests
+from HPA to DPA.  This is why they must be aware of the entire interleave set.</p>
+<p>Linux does not support unbalanced interleave configurations.  As a result, all
+endpoints in an interleave set must have the same ways and granularity.</p>
+</section>
+</section>
+</section>
+<section id="example-configurations">
+<h2>Example Configurations<a class="headerlink" href="#example-configurations" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../example-configurations/single-device/">Single Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example-configurations/hb-interleave/">Inter-Host-Bridge Interleave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example-configurations/intra-hb-interleave/">Intra-Host-Bridge Interleave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example-configurations/multi-interleave/">Multi-Level Interleave</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../early-boot/" class="btn btn-neutral float-left" title="Linux Init (Early Boot)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../cxl-cli/" class="btn btn-neutral float-right" title="CXL-CLI Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Gregory Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linux Init (Early Boot) &mdash; CXL: Boot To Bash  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=949a1ff5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=582ca9e2"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script data-domain="coderefinery.github.io" defer="defer" src="https://plausible.cs.aalto.fi/js/script.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="CXL Driver Operation" href="../cxl-driver/" />
+    <link rel="prev" title="Overview" href="../overview/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            CXL: Boot To Bash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../">CXL on Linux: Boot To Bash</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Device Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/device-types/">Devices and Protocols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/uefi/">UEFI Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Platform Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/bios-and-efi/">BIOS/EFI Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/acpi/">ACPI Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../platform/example-configs/">Example Platform Configurations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Linux Kernel Configuration:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Linux Init (Early Boot)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bios-build-and-boot-options">BIOS, Build and Boot Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-map-creation">Memory Map Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numa-node-reservation">NUMA Node Reservation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-tiers-creation">Memory Tiers Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contiguous-memory-allocation">Contiguous Memory Allocation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cxl-driver/">CXL Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dax-driver/">DAX Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../memory-hotplug/">Memory Hotplug</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Memory Allocation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/dax/">DAX Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/page-allocator/">The Page Allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/reclaim/">Reclaim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/hugepages/">Huge Pages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/tiering/">Memory Tiering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/memory-expansion/">Memory Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/dynamic-capacity/">Dynamic Capacity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/virtual-machines/">Virtual Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/shared-memory/">Shared Memory</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">CXL: Boot To Bash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Linux Init (Early Boot)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gourryinverse/cxl-boot-to-bash/blob/main/doc/linux/early-boot.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="linux-init-early-boot">
+<h1>Linux Init (Early Boot)<a class="headerlink" href="#linux-init-early-boot" title="Link to this heading"></a></h1>
+<p>Linux configuration is split into two major steps: Early-Boot and everything else.</p>
+<p>During early boot, Linux sets up immutible resources (such as numa nodes), while
+later operations include things like driver probe and memory hotplug.  Linux may
+read EFI and ACPI information throughout this process to configure logical
+representations of the devices.</p>
+<p>During Linux Early Boot stage (functions in the kernel that have the __init
+decorator), the system takes the resources created by EFI/BIOS (ACPI tables)
+and turns them into resources that the kernel can consume.</p>
+<section id="bios-build-and-boot-options">
+<h2>BIOS, Build and Boot Options<a class="headerlink" href="#bios-build-and-boot-options" title="Link to this heading"></a></h2>
+<p>There are 4 pre-boot options that need to be considered during kernel build
+which dictate how memory will be managed by Linux during early boot.</p>
+<ul class="simple">
+<li><p>EFI_MEMORY_SP</p>
+<ul>
+<li><p>BIOS/EFI Option that dictates whether memory is SystemRAM or
+Specific Purpose.  Specific Purpose memory will be deferred to
+drivers to manage - and not immediately exposed as system RAM.</p></li>
+</ul>
+</li>
+<li><p>CONFIG_EFI_SOFT_RESERVE</p>
+<ul>
+<li><p>Linux Build config option that dictates whether the kernel supports
+Specific Purpose memory.</p></li>
+</ul>
+</li>
+<li><p>CONFIG_MHP_DEFAULT_ONLINE_TYPE</p>
+<ul>
+<li><p>Linux Build config that dictates whether and how Specific Purpose memory
+converted to a dax device should be managed (left as DAX or onlined as
+SystemRAM in ZONE_NORMAL or ZONE_MOVABLE).</p></li>
+</ul>
+</li>
+<li><p>nosoftreserve</p>
+<ul>
+<li><p>Linux kernel boot option that dictates whether Soft Reserve should be
+supported.  Similar to CONFIG_EFI_SOFT_RESERVE.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="memory-map-creation">
+<h2>Memory Map Creation<a class="headerlink" href="#memory-map-creation" title="Link to this heading"></a></h2>
+<p>While the kernel parses the EFI memory map, if <code class="code docutils literal notranslate"><span class="pre">Specific</span> <span class="pre">Purpose</span></code> memory
+is supported and detect, it will set this region aside as <code class="code docutils literal notranslate"><span class="pre">SOFT_RESERVED</span></code>.</p>
+<p>If <code class="code docutils literal notranslate"><span class="pre">EFI_MEMORY_SP=0</span></code>, <code class="code docutils literal notranslate"><span class="pre">CONFIG_EFI_SOFT_RESERVE=n</span></code>, or
+<code class="code docutils literal notranslate"><span class="pre">nosoftreserve=y</span></code> - Linux will default a CXL device memory region to
+SystemRAM.  This will expose the memory to the kernel page allocator in
+<code class="code docutils literal notranslate"><span class="pre">ZONE_NORMAL</span></code>, making it available for use for most allocations (including
+<code class="code docutils literal notranslate"><span class="pre">struct</span> <span class="pre">page</span></code> and page tables).</p>
+<p>If <cite>Specific Purpose</cite> is set and supported, <code class="code docutils literal notranslate"><span class="pre">CONFIG_MHP_DEFAULT_ONLINE_TYPE_*</span></code>
+dictates whether the memory is onlined by default (<code class="code docutils literal notranslate"><span class="pre">_OFFLINE</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">_ONLINE_*</span></code>), and if online which zone to online this memory to by default
+(<code class="code docutils literal notranslate"><span class="pre">_NORMAL</span></code> or <code class="code docutils literal notranslate"><span class="pre">_MOVABLE</span></code>).</p>
+<p>If placed in <code class="code docutils literal notranslate"><span class="pre">ZONE_MOVABLE</span></code>, the memory will not be available for most
+kernel allocations (such as <code class="code docutils literal notranslate"><span class="pre">struct</span> <span class="pre">page</span></code> or page tables).  This may
+significant impact performance depending on the memory capacity of the system.</p>
+</section>
+<section id="numa-node-reservation">
+<h2>NUMA Node Reservation<a class="headerlink" href="#numa-node-reservation" title="Link to this heading"></a></h2>
+<p>Linux refers to the proximity domains (<code class="code docutils literal notranslate"><span class="pre">PXM</span></code>) defined in the SRAT to
+create NUMA nodes in <code class="code docutils literal notranslate"><span class="pre">acpi_numa_init</span></code>. Typically, there is a 1:1 relation
+between <code class="code docutils literal notranslate"><span class="pre">PXM</span></code> and NUMA node IDs.</p>
+<p>SRAT is the only ACPI defined way of defining Proximity Domains. Linux chooses
+to, at most, map those 1:1 with NUMA nodes. CEDT adds a description of SPA
+ranges which Linux may wish to map to one or more NUMA nodes</p>
+<p>If there are CXL ranges in the CFMWS but not in SRAT, then a fake <code class="code docutils literal notranslate"><span class="pre">PXM</span></code>
+is created (as of v6.15). In the future, Linux may reject CFMWS not described
+by SRAT due to the ambiguity of proximity domain association.</p>
+<p>It is important to note that NUMA node creation cannot be done at runtime. All
+possible NUMA nodes are identified at <code class="code docutils literal notranslate"><span class="pre">__init</span></code> time, more specifically
+during <code class="code docutils literal notranslate"><span class="pre">mm_init</span></code>. The CEDT and SRAT must contain sufficient <code class="code docutils literal notranslate"><span class="pre">PXM</span></code>
+data for Linux to identify NUMA nodes their associated memory regions.</p>
+<p>The relevant code exists in: <code class="code docutils literal notranslate"><span class="pre">linux/drivers/acpi/numa/srat.c</span></code>.</p>
+<p>See the Example Platform Configurations section for more information.</p>
+</section>
+<section id="memory-tiers-creation">
+<h2>Memory Tiers Creation<a class="headerlink" href="#memory-tiers-creation" title="Link to this heading"></a></h2>
+<p>Memory tiers are a collection of NUMA nodes grouped by performance characteristics.
+During <code class="code docutils literal notranslate"><span class="pre">__init</span></code>, Linux initializes the system with a default memory tier that
+contains all nodes marked <code class="code docutils literal notranslate"><span class="pre">N_MEMORY</span></code>.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">memory_tier_init</span></code> is called at boot for all nodes with memory online by
+default. <code class="code docutils literal notranslate"><span class="pre">memory_tier_late_init</span></code> is called during late-init for nodes setup
+during driver configuration.</p>
+<p>Nodes are only marked <code class="code docutils literal notranslate"><span class="pre">N_MEMORY</span></code> if they have <em>online</em> memory.</p>
+<p>Tier membership can be inspected in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">devices</span><span class="o">/</span><span class="n">virtual</span><span class="o">/</span><span class="n">memory_tiering</span><span class="o">/</span><span class="n">memory_tierN</span><span class="o">/</span><span class="n">nodelist</span>
+<span class="mi">0</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>If nodes are grouped which have clear difference in performance, check the HMAT
+and CDAT information for the CXL nodes.  All nodes default to the DRAM tier,
+unless HMAT/CDAT information is reported to the memory_tier component via
+<cite>access_coordinates</cite>.</p>
+</section>
+<section id="contiguous-memory-allocation">
+<h2>Contiguous Memory Allocation<a class="headerlink" href="#contiguous-memory-allocation" title="Link to this heading"></a></h2>
+<p>The contiguous memory allocator (CMA) enables reservation of contiguous memory
+regions on NUMA nodes during early boot.  However, CMA cannot reserve memory
+on NUMA nodes that are not online during early boot.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>void __init hugetlb_cma_reserve(int order) {
+  if (!node_online(nid))
+    /* do not allow reservations */
+}
+</pre></div>
+</div>
+<p>This means if users intend to defer management of CXL memory to the driver, CMA
+cannot be used to guarantee huge page allocations.  If enabling CXL memory as
+SystemRAM in <cite>ZONE_NORMAL</cite> during early boot, CMA reservations per-node can be
+made with the <code class="code docutils literal notranslate"><span class="pre">cma_pernuma</span></code> or <code class="code docutils literal notranslate"><span class="pre">numa_cma</span></code> kernel command line
+parameters.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../overview/" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../cxl-driver/" class="btn btn-neutral float-right" title="CXL Driver Operation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Gregory Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIOS/EFI Configuration &mdash; CXL: Boot To Bash  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=949a1ff5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=582ca9e2"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script data-domain="coderefinery.github.io" defer="defer" src="https://plausible.cs.aalto.fi/js/script.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="ACPI Tables" href="../acpi/" />
+    <link rel="prev" title="UEFI Data" href="../../devices/uefi/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            CXL: Boot To Bash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../">CXL on Linux: Boot To Bash</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Device Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/device-types/">Devices and Protocols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/uefi/">UEFI Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Platform Configuration</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BIOS/EFI Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#uefi-settings">UEFI Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#uefisettings-examples">uefisettings examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#physical-memory-map">Physical Memory Map</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#physical-address-region-alignment">Physical Address Region Alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-holes">Memory Holes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#decoder-programming">Decoder Programming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#translation-point">Translation Point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interleave-and-configuration-flexibility">Interleave and Configuration Flexibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Memory Holes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-media-devices">Multi-Media Devices</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../acpi/">ACPI Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example-configs/">Example Platform Configurations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Linux Kernel Configuration:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/overview/">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/early-boot/">Linux Init (Early Boot)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/cxl-driver/">CXL Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/dax-driver/">DAX Driver Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/memory-hotplug/">Memory Hotplug</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Memory Allocation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/dax/">DAX Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/page-allocator/">The Page Allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/reclaim/">Reclaim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/hugepages/">Huge Pages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../allocation/tiering/">Memory Tiering</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use Cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/memory-expansion/">Memory Expansion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/dynamic-capacity/">Dynamic Capacity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/virtual-machines/">Virtual Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../use-case/shared-memory/">Shared Memory</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">CXL: Boot To Bash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">BIOS/EFI Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gourryinverse/cxl-boot-to-bash/blob/main/doc/platform/bios-and-efi.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bios-efi-configuration">
+<h1>BIOS/EFI Configuration<a class="headerlink" href="#bios-efi-configuration" title="Link to this heading"></a></h1>
+<p>BIOS and EFI are largely responsible for configuring static information about
+devices (or potential future devices) such that Linux can build the appropriate
+logical representations of these devices.</p>
+<p>At a high level, this is what occurs during this phase of configuration.</p>
+<ul class="simple">
+<li><p>The bootloader starts the BIOS/EFI.</p></li>
+<li><p>BIOS/EFI do early device probe to determine static configuration</p></li>
+<li><p>BIOS/EFI creates ACPI Tables that describe static config for the OS</p></li>
+<li><p>BIOS/EFI create the system memory map (EFI Memory Map, E820, etc)</p></li>
+<li><p>BIOS/EFI calls <code class="code docutils literal notranslate"><span class="pre">start_kernel</span></code> and begins the Linux Early Boot process.</p></li>
+</ul>
+<p>Much of what this section is concerned with is ACPI Table production and
+static memory map configuration. More detail on these tables can be found
+under Platform Configuration -&gt; ACPI Table Reference.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Platform Vendors should read carefully, as this sections has recommendations
+on physical memory region size and alignment, memory holes, HDM interleave,
+and what linux expects of HDM decoders trying to work with these features.</p>
+</div>
+<section id="uefi-settings">
+<h2>UEFI Settings<a class="headerlink" href="#uefi-settings" title="Link to this heading"></a></h2>
+<p>If your platform supports it, the <code class="code docutils literal notranslate"><span class="pre">uefisettings</span></code> command can be used to
+read/write EFI settings. Changes will be reflected on the next reboot. Kexec
+is not a sufficient reboot.</p>
+<p>One notable configuration here is the EFI_MEMORY_SP (Specific Purpose) bit.
+When this is enabled, this bit tells linux to defer management of a memory
+region to a driver (in this case, the CXL driver). Otherwise, the memory is
+treated as “normal memory”, and is exposed to the page allocator during
+<code class="code docutils literal notranslate"><span class="pre">__init</span></code>.</p>
+<section id="uefisettings-examples">
+<h3>uefisettings examples<a class="headerlink" href="#uefisettings-examples" title="Link to this heading"></a></h3>
+<p><code class="code docutils literal notranslate"><span class="pre">uefisettings</span> <span class="pre">identify</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uefisettings</span> <span class="n">identify</span>
+
+<span class="n">bios_vendor</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="n">bios_version</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="n">bios_release</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="n">bios_date</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="n">product_name</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="n">product_family</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="n">product_version</span><span class="p">:</span> <span class="n">xxx</span>
+</pre></div>
+</div>
+<p>On some AMD platforms, the <code class="code docutils literal notranslate"><span class="pre">EFI_MEMORY_SP</span></code> bit is set via the <code class="code docutils literal notranslate"><span class="pre">CXL</span>
+<span class="pre">Memory</span> <span class="pre">Attribute</span></code> field.  This may be called something else on your platform.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">uefisettings</span> <span class="pre">get</span> <span class="pre">&quot;CXL</span> <span class="pre">Memory</span> <span class="pre">Attribute&quot;</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span><span class="p">:</span> <span class="n">xxx</span>
+<span class="o">...</span>
+<span class="n">question</span><span class="p">:</span> <span class="n">Question</span> <span class="p">{</span>
+    <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;CXL Memory Attribute&quot;</span><span class="p">,</span>
+    <span class="n">answer</span><span class="p">:</span> <span class="s2">&quot;Enabled&quot;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="physical-memory-map">
+<h2>Physical Memory Map<a class="headerlink" href="#physical-memory-map" title="Link to this heading"></a></h2>
+<section id="physical-address-region-alignment">
+<h3>Physical Address Region Alignment<a class="headerlink" href="#physical-address-region-alignment" title="Link to this heading"></a></h3>
+<p>As of Linux v6.14, the hotplug memory system requires memory regions to be
+uniform in size and alignment.  While the CXL specification allows for memory
+regions as small as 256MB, the supported memory block size and alignment for
+hotplugged memory is architecture-defined.</p>
+<p>A Linux memory blocks may be as small as 128MB and increase in powers of two.</p>
+<ul class="simple">
+<li><p>On ARM, the default block size and alignment is either 128MB or 256MB.</p></li>
+<li><p>On x86, the default block size is 256MB, and increases to 2GB as the
+capacity of the system increases up to 64GB.</p></li>
+</ul>
+<p>For best support across versions, platform vendors should place CXL memory at
+a 2GB aligned base address, and regions should be 2GB aligned.  This also helps
+prevent the creating thousands of memory devices (one per block).</p>
+</section>
+<section id="memory-holes">
+<h3>Memory Holes<a class="headerlink" href="#memory-holes" title="Link to this heading"></a></h3>
+<p>Holes in the memory map are tricky.  Consider a 4GB device located at base
+address 0x100000000, but with the following following memory map</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x100000000</span>    <span class="o">|</span>
+<span class="o">|</span>        <span class="n">CXL</span>        <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x1BFFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x1C0000000</span>    <span class="o">|</span>
+<span class="o">|</span>    <span class="n">MEMORY</span> <span class="n">HOLE</span>    <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x1FFFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x200000000</span>    <span class="o">|</span>
+<span class="o">|</span>     <span class="n">CXL</span> <span class="n">CONT</span><span class="o">.</span>     <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x23FFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+</pre></div>
+</div>
+<p>There are two issues to consider:</p>
+<ul class="simple">
+<li><p>decoder programming, and</p></li>
+<li><p>memory block alignment.</p></li>
+</ul>
+<p>If your architecture requires 2GB uniform size and aligned memory blocks, the
+only capacity Linux is capable of mapping (as of v6.14) would be the capacity
+from <cite>0x100000000-0x180000000</cite>.  The remaining capacity will be stranded, as
+they are not of 2GB aligned length.</p>
+<p>Assuming your architecture and memory configuration allows 1GB memory blocks,
+this memory map is supported and this should be presented as multiple CFMWS
+in the CEDT that describe each side of the memory hole separately - along with
+matching decoders.</p>
+<p>Multiple decoders can (and should) be used to manage such a memory hole (see
+below), but each chunk of a memory hole should be aligned to a reasonable block
+size (larger alignment is always better).  If you intend to have memory holes
+in the memory map, expect to use one decoder per contiguous chunk of host
+physical memory.</p>
+<p>As of v6.14, Linux does provide support for memory hotplug of multiple
+physical memory regions separated by a memory hole described by a single
+HDM decoder.</p>
+</section>
+</section>
+<section id="decoder-programming">
+<h2>Decoder Programming<a class="headerlink" href="#decoder-programming" title="Link to this heading"></a></h2>
+<p>If BIOS/EFI intends to program the decoders to be statically configured,
+there are a few things to consider to avoid major pitfalls that will
+prevent Linux compatibility.  Some of these recommendations are not not
+required “per the specification”, but Linux makes no guarantees of support
+otherwise.</p>
+<section id="translation-point">
+<h3>Translation Point<a class="headerlink" href="#translation-point" title="Link to this heading"></a></h3>
+<p>Per the specification, the only decoders which <strong>TRANSLATE</strong> Host Physical
+Address (HPA) to Device Physical Address (DPA) are the <strong>Endpoint Decoders</strong>.
+All other decoders in the fabric are intended to route accesses without
+translating the addresses.</p>
+<p>This is heavily implied by the specification, see:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CXL</span> <span class="n">Specification</span> <span class="mf">3.1</span>
+<span class="mf">8.2.4.20</span><span class="p">:</span> <span class="n">CXL</span> <span class="n">HDM</span> <span class="n">Decoder</span> <span class="n">Capability</span> <span class="n">Structure</span>
+<span class="o">-</span> <span class="n">Implementation</span> <span class="n">Note</span><span class="p">:</span> <span class="n">CXL</span> <span class="n">Host</span> <span class="n">Bridge</span> <span class="ow">and</span> <span class="n">Upstream</span> <span class="n">Switch</span> <span class="n">Port</span> <span class="n">Decoder</span> <span class="n">Flow</span>
+<span class="o">-</span> <span class="n">Implementation</span> <span class="n">Note</span><span class="p">:</span> <span class="n">Device</span> <span class="n">Decoder</span> <span class="n">Logic</span>
+</pre></div>
+</div>
+<p>Given this, Linux makes a strong assumption that decoders between CPU and
+endpoint will all be programmed with addresses ranges that are subsets of
+their parent decoder.</p>
+<p>Due to some ambiguity in how Architecture, ACPI, PCI, and CXL specifications
+“hand off” responsibility between domains, some early adopting platforms
+attempted to do translation at the originating memory controller or host
+bridge.  This configuration requires a platform specific extension to the
+driver and is not officially endorsed - despite being supported.</p>
+<p>It is <em>highly recommended</em> <strong>NOT</strong> to do this; otherwise, you are on your own
+to implement driver support for your platform.</p>
+</section>
+<section id="interleave-and-configuration-flexibility">
+<h3>Interleave and Configuration Flexibility<a class="headerlink" href="#interleave-and-configuration-flexibility" title="Link to this heading"></a></h3>
+<p>If providing cross-host-bridge interleave, a CFMWS entry in the CEDT must be
+presented with target host-bridges for the interleaved device sets (there may
+be multiple behind each host bridge).</p>
+<p>If providing intra-host-bridge interleaving, only 1 CFMWS entry in the CEDT is
+required for that host bridge - if it covers the entire capacity of the devices
+behind the host bridge.</p>
+<p>If intending to provide users flexibility in programming decoders beyond the
+root, you may want to provide multiple CFMWS entries in the CEDT intended for
+different purposes.  For example, you may want to consider adding:</p>
+<ol class="arabic simple">
+<li><p>A CFMWS entry to cover all interleavable host bridges.</p></li>
+<li><p>A CFMWS entry to cover all devices on a single host bridge.</p></li>
+<li><p>A CFMWS entry to cover each device.</p></li>
+</ol>
+<p>A platform may choose to add all of these, or change the mode based on a BIOS
+setting.  For each CFMWS entry, Linux expects descriptions of the described
+memory regions in the SRAT to determine the number of NUMA nodes it should
+reserve during early boot / init.</p>
+<p>As of v6.14, Linux will create a NUMA node for each CEDT CFMWS entry, even if
+a matching SRAT entry does not exist; however, this is not guaranteed in the
+future and such a configuration should be avoided.</p>
+</section>
+<section id="id1">
+<h3>Memory Holes<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>If your platform includes memory holes intersparsed between your CXL memory, it
+is recommended to utilize multiple decoders to cover these regions of memory,
+rather than try to program the decoders to accept the entire range and expect
+Linux to manage the overlap.</p>
+<p>For example, consider the Memory Hole described above</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x100000000</span>    <span class="o">|</span>
+<span class="o">|</span>        <span class="n">CXL</span>        <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x1BFFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x1C0000000</span>    <span class="o">|</span>
+<span class="o">|</span>    <span class="n">MEMORY</span> <span class="n">HOLE</span>    <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x1FFFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+<span class="o">|</span>    <span class="mh">0x200000000</span>    <span class="o">|</span>
+<span class="o">|</span>     <span class="n">CXL</span> <span class="n">CONT</span><span class="o">.</span>     <span class="o">|</span>
+<span class="o">|</span>    <span class="mh">0x23FFFFFFF</span>    <span class="o">|</span>
+<span class="o">---------------------</span>
+</pre></div>
+</div>
+<p>Assuming this is provided by a single device attached directly to a host bridge,
+Linux would expect the following decoder programming</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-----------------------</span>   <span class="o">-----------------------</span>
+<span class="o">|</span> <span class="n">root</span><span class="o">-</span><span class="n">decoder</span><span class="o">-</span><span class="mi">0</span>      <span class="o">|</span>   <span class="o">|</span> <span class="n">root</span><span class="o">-</span><span class="n">decoder</span><span class="o">-</span><span class="mi">1</span>      <span class="o">|</span>
+<span class="o">|</span>   <span class="n">base</span><span class="p">:</span> <span class="mh">0x100000000</span> <span class="o">|</span>   <span class="o">|</span>   <span class="n">base</span><span class="p">:</span> <span class="mh">0x200000000</span> <span class="o">|</span>
+<span class="o">|</span>   <span class="n">size</span><span class="p">:</span>  <span class="mh">0xC0000000</span> <span class="o">|</span>   <span class="o">|</span>   <span class="n">size</span><span class="p">:</span>  <span class="mh">0x40000000</span> <span class="o">|</span>
+<span class="o">-----------------------</span>   <span class="o">-----------------------</span>
+           <span class="o">|</span>                         <span class="o">|</span>
+<span class="o">-----------------------</span>   <span class="o">-----------------------</span>
+<span class="o">|</span> <span class="n">HB</span><span class="o">-</span><span class="n">decoder</span><span class="o">-</span><span class="mi">0</span>        <span class="o">|</span>   <span class="o">|</span> <span class="n">HB</span><span class="o">-</span><span class="n">decoder</span><span class="o">-</span><span class="mi">1</span>        <span class="o">|</span>
+<span class="o">|</span>   <span class="n">base</span><span class="p">:</span> <span class="mh">0x100000000</span> <span class="o">|</span>   <span class="o">|</span>   <span class="n">base</span><span class="p">:</span> <span class="mh">0x200000000</span> <span class="o">|</span>
+<span class="o">|</span>   <span class="n">size</span><span class="p">:</span>  <span class="mh">0xC0000000</span> <span class="o">|</span>   <span class="o">|</span>   <span class="n">size</span><span class="p">:</span>  <span class="mh">0x40000000</span> <span class="o">|</span>
+<span class="o">-----------------------</span>   <span class="o">-----------------------</span>
+           <span class="o">|</span>                         <span class="o">|</span>
+<span class="o">-----------------------</span>   <span class="o">-----------------------</span>
+<span class="o">|</span> <span class="n">ep</span><span class="o">-</span><span class="n">decoder</span><span class="o">-</span><span class="mi">0</span>        <span class="o">|</span>   <span class="o">|</span> <span class="n">ep</span><span class="o">-</span><span class="n">decoder</span><span class="o">-</span><span class="mi">1</span>        <span class="o">|</span>
+<span class="o">|</span>   <span class="n">base</span><span class="p">:</span> <span class="mh">0x100000000</span> <span class="o">|</span>   <span class="o">|</span>   <span class="n">base</span><span class="p">:</span> <span class="mh">0x200000000</span> <span class="o">|</span>
+<span class="o">|</span>   <span class="n">size</span><span class="p">:</span>  <span class="mh">0xC0000000</span> <span class="o">|</span>   <span class="o">|</span>   <span class="n">size</span><span class="p">:</span>  <span class="mh">0x40000000</span> <span class="o">|</span>
+<span class="o">-----------------------</span>   <span class="o">-----------------------</span>
+</pre></div>
+</div>
+<p>With a CEDT configuration with two CFMWS describing the above root decoders.</p>
+<p>Linux makes no guarantee of support for strange memory hole situations.</p>
+</section>
+<section id="multi-media-devices">
+<h3>Multi-Media Devices<a class="headerlink" href="#multi-media-devices" title="Link to this heading"></a></h3>
+<p>The CFMWS field of the CEDT has special restriction bits which describe whether
+the described memory region allows volatile or persistent memory (or both). If
+the platform intends to support either:</p>
+<ol class="arabic simple">
+<li><p>A device with multiple medias, or</p></li>
+<li><p>Using a persistent memory device as normal memory</p></li>
+</ol>
+<p>A platform may wish to create multiple CEDT CFMWS entries to describe the same
+memory, with the intent of allowing the end user flexibility in how that memory
+is configured. Linux does not presently have strong requirements in this area.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../devices/uefi/" class="btn btn-neutral float-left" title="UEFI Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../acpi/" class="btn btn-neutral float-right" title="ACPI Tables" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Gregory Price.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
