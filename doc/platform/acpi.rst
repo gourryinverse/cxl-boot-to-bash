@@ -59,10 +59,10 @@ Most failures described here result in a failure of the driver to surface
 memory as a DAX device and/or kmem.
 
 * CEDT CFMWS targets list UIDs do not match CEDT CHBS UIDs.
-* CEDT CFMWS targets list UIDs do not match DSDT Host Bridge UIDs.
+* CEDT CFMWS targets list UIDs do not match DSDT CXL Host Bridge UIDs.
 * CEDT CFMWS Restriction Bits are not correct.
 * CEDT CFMWS Memory regions are poorly aligned.
-* CEDT CFMWS Memory regions spans a planform memory hole.
+* CEDT CFMWS Memory regions spans a platform memory hole.
 * CEDT CHBS UIDs do not match DSDT CXL Host Bridge UIDs.
 * CEDT CHBS Specification version is incorrect.
 * SRAT is missing regions described in CEDT CFMWS.
