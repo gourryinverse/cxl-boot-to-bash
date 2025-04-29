@@ -99,7 +99,7 @@ ports: :code:`dport1`, :code:`dport2`, and :code:`dport113`..
                             {
                                 "decoder":"decoder5.0",
                                 "resource":825975898112,
-                                "size":137438953472,,
+                                "size":137438953472,
                                 "interleave_ways":1,
                                 "region":"region0",
                                 "dpa_resource":0,
@@ -123,7 +123,7 @@ Next we have the decoders belonging to the host bridge:
                     {
                         "decoder":"decoder1.0",
                         "resource":825975898112,
-                        "size":137438953472,,
+                        "size":137438953472,
                         "interleave_ways":1,
                         "region":"region0",
                         "nr_targets":1,

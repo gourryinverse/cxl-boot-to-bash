@@ -104,7 +104,7 @@ ports: :code:`dport1`, :code:`dport2`, and :code:`dport113`..
                                 "interleave_granularity":256,
                                 "region":"region0",
                                 "dpa_resource":0,
-                                "dpa_size":274877906944,
+                                "dpa_size":137438953472,
                                 "mode":"ram"
                             }
                         ]
@@ -130,7 +130,7 @@ ports: :code:`dport1`, :code:`dport2`, and :code:`dport113`..
                                 "interleave_granularity":256,
                                 "region":"region0",
                                 "dpa_resource":0,
-                                "dpa_size":274877906944,
+                                "dpa_size":137438953472,
                                 "mode":"ram"
                             }
                         ]
